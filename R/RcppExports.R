@@ -20,17 +20,3 @@ splitHeaderLines <- function(lines) {
     .Call('_lasr_splitHeaderLines', PACKAGE = 'lasr', lines)
 }
 
-#' @name getLogData
-#' @title Get Log Data
-#' @description Gets log data from an unwrapped LAS file
-#' @param lines Vector of LAS text lines
-#' @param curveNames Vector of curve names
-#' @param nullVal The null value
-#' @return A data.frame of parsed header values
-#' @export
-#' @useDynLib lasr
-#' @importFrom Rcpp sourceCpp
-getLogData <- function(lines, curveNames, nullVal) {
-    .Call('_lasr_getLogData', PACKAGE = 'lasr', lines, curveNames, nullVal)
-}
-

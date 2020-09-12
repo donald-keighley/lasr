@@ -16,7 +16,5 @@ A two part list containing the LAS file and the header
 Imports an LAS file to R
 }
 \examples{
-#path = 'C:/Users/donal/Documents/R/3522229A.las'
-#lasFile = read.las()
-# http://pipeline.wyo.gov/whatups/whatuplas.cfm?nautonum=80871
+#read.las(system.file("extdata", "Jonah_Federal_20-5.las", package = "lasr"))
 }
