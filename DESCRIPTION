@@ -1,0 +1,14 @@
+Package: lasr
+Type: Package
+Title: Reads and writes LAS files for R
+Version: 1.0
+Date: 2020-07-06
+Author: Donald Keighley
+Maintainer: Donald Keighley <donald.keighley@gmail.com>
+Description: This package reads and writes LAS files for well log data (not LiDAR)
+License: GPL-3
+Imports: Rcpp, stringi, zoo
+Depends: data.table
+LinkingTo: Rcpp
+Encoding: UTF-8
+RoxygenNote: 7.1.1
