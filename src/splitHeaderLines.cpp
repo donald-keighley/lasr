@@ -63,7 +63,7 @@ List splitHeaderLines(std::vector<std::string> lines) {
   }
 
   //Creates a vector of vectors the size of the header
-  std::vector<std::vector<std::string>> parts(5, std::vector<std::string>(headerLines,""));
+  std::vector<std::vector<std::string>> parts(6, std::vector<std::string>(headerLines,""));
   int k = 0;
   
   //Sets the null value in case it's not found
@@ -74,7 +74,7 @@ List splitHeaderLines(std::vector<std::string> lines) {
   
   //Loops through and parses the header
   for(int j = 0; j<nlines; j++){
-    int d1=0; int d2=0; int d3=0;
+    int d1=0; int d2=0; int d3=0; int d4=0; int d5=0;
     std::string line = lines[j];
     int numchar = line.size();
     std::string firstOne = line.substr(0,1);
@@ -84,6 +84,8 @@ List splitHeaderLines(std::vector<std::string> lines) {
         if((line[i]=='.') & (d1==0)){d1=i;}
         if((line[i]==' ') & (d1!=0) & (d2==0)){d2=i;}
         if(line[i]==':'){d3=i;}
+        if(line[i]=='{'){d4=i;}
+        if(line[i]=='}'){d5=i;}
       }
       if((d1!=0) & (d2!=0) & (d3!=0) & (d1<d2) & (d2<d3) & (d3<numchar) & (sect!="")){
         parts[0][k]=sect;
@@ -92,17 +94,34 @@ List splitHeaderLines(std::vector<std::string> lines) {
         parts[2][k]=trim_ws(line.substr(d1+1,(d2-1)-d1));
         std::string val=trim_ws(line.substr(d2+1,(d3-1)-d2));
         parts[3][k]=val;
-        parts[4][k]=trim_ws(line.substr(d3+1,line.size()-d3));
+        if(d4>d3){
+          parts[4][k]=trim_ws(line.substr(d3+1,(d4-1)-d3));
+        }else{
+          parts[4][k]=trim_ws(line.substr(d3+1,line.size()-d3));
+        }
+        if((d4>0) & (d5>(d4+1))){
+          parts[5][k]=trim_ws(line.substr(d4+1,d5-(d4+1)));
+        }
         //Gets the null value
-        if((sect=="W") & (to_upper(mnem)=="NULL")){nullVal=std::atof(val.c_str());}
+        if((sect=="WELL") & (to_upper(mnem)=="NULL")){nullVal=std::atof(val.c_str());}
         //Gets the curve names
-        if(sect=="C"){curveNames.push_back(mnem);}
+        if(sect=="CURVE"){curveNames.push_back(mnem);}
         k++;
       }
     }else if((firstOne=="~")|(firstTwo=="..")){
       sect=to_upper(line.substr(1,1));
       if(((sect!="C")&(sect!="P")&(sect!="W")&(sect!="V"))|(to_upper(line.substr(1,2))=="CO")){
         sect="";
+      }else{
+        if(sect=="C"){
+          sect="CURVE";
+        }else if(sect=="P"){
+          sect="PARAMETER";
+        }else if(sect=="W"){
+          sect="WELL";
+        }else if(sect=="V"){
+          sect="VERSION";
+        }
       }
     }
   }
@@ -110,13 +129,14 @@ List splitHeaderLines(std::vector<std::string> lines) {
   //Loops through the header again to resize it if necessary, makes DataFrame
   DataFrame header;
   if(k<headerLines){
-    std::vector<std::vector<std::string>> parts_shrink(5, std::vector<std::string>(k,""));
+    std::vector<std::vector<std::string>> parts_shrink(6, std::vector<std::string>(k,""));
     for(int j = 0; j<k; j++){
       parts_shrink[0][j]=parts[0][j];
       parts_shrink[1][j]=parts[1][j];
       parts_shrink[2][j]=parts[2][j];
       parts_shrink[3][j]=parts[3][j];
       parts_shrink[4][j]=parts[4][j];
+      parts_shrink[5][j]=parts[5][j];
     }
     parts.clear();
     header=wrap(parts_shrink);
@@ -127,7 +147,7 @@ List splitHeaderLines(std::vector<std::string> lines) {
   }
   
   //Adds names to DataFrame
-  header.attr("names")  = CharacterVector::create("SECT", "MNEM", "UNIT","VALUE", "COMMENT");
+  header.attr("names")  = CharacterVector::create("SECT", "MNEM", "UNIT","VALUE", "COMMENT","FORMAT");
   
   //Creates the log data vector
   int ncol = curveNames.size();
