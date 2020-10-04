@@ -8,6 +8,13 @@
 #' @return A string with no leading or trailing spaces
 NULL
 
+#' @name to_upper
+#' @title to_upper
+#' @description Converts a string to upper case
+#' @param str A single string
+#' @return An upper case string
+NULL
+
 #' @name splitHeaderLines
 #' @title splitHeaderLines
 #' @description Splits lines from an LAS header
