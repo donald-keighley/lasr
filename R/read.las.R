@@ -8,12 +8,30 @@
 #' @examples
 #' #read.las(system.file("extdata", "Jonah_Federal_20-5.las", package = "lasr"))
 read.las = function(path){
-
+  
   #Reads in the data as lines using fread for speed
-  lines = fread(path, sep=NULL, header=FALSE, showProgress=FALSE, quote="", col.names='line')
+  bad_las=FALSE
+  if(file.exists(path)){
+    lines = suppressWarnings(fread(path, sep=NULL, header=FALSE, showProgress=FALSE, quote="", col.names='line'))
+  }else{
+    bad_las=TRUE
+    warning('File does not exist.')
+  }
   
   #Parses the data
-  las = splitHeaderLines(lines$line)
+  if(nrow(lines)>0){
+    las = splitHeaderLines(lines$line)
+  }else{
+    bad_las=TRUE
+    warning('File contains no data.')
+  }
+  
+  if(isTRUE(bad_las)){
+    #Creates a default empty dataset
+    char_na = as.character(NA)
+    header = data.frame("SECTION"=char_na, "MNEM"=char_na, "UNIT"=char_na,"VALUE"=char_na, "COMMENT"=char_na,"FORMAT"=char_na)
+    las = list('header'=header, 'curves'=NULL)
+  }
   
   return(las)
 }

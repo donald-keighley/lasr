@@ -147,7 +147,7 @@ List splitHeaderLines(std::vector<std::string> lines) {
   }
   
   //Adds names to DataFrame
-  header.attr("names")  = CharacterVector::create("SECT", "MNEM", "UNIT","VALUE", "COMMENT","FORMAT");
+  header.attr("names")  = CharacterVector::create("SECTION", "MNEM", "UNIT","VALUE", "COMMENT","FORMAT");
   
   //Creates the log data vector
   int ncol = curveNames.size();
