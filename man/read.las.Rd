@@ -4,10 +4,12 @@
 \alias{read.las}
 \title{read.las}
 \usage{
-read.las(path)
+read.las(paths, nthreads = 1)
 }
 \arguments{
-\item{path}{The path to the LAS file}
+\item{paths}{A vector of LAS file paths}
+
+\item{nthreads}{An integer indicating the number of threads to use}
 }
 \value{
 A two part list containing the LAS file and the header
@@ -16,5 +18,5 @@ A two part list containing the LAS file and the header
 Imports an LAS file to R
 }
 \examples{
-#read.las(system.file("extdata", "Jonah_Federal_20-5.las", package = "lasr"))
+las = read.las(system.file("extdata", "Jonah_Federal_20-5.las", package = "lasr"))
 }

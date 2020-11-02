@@ -51,6 +51,7 @@ List splitHeaderLines(std::vector<std::string> lines) {
   for(int j = 0; j<nlines; j++){
     firstchar=(lines[j].substr(0,1));
     if((lines[j].substr(0,2))=="~A"){
+    //Keeps going after the data section indicator in case there's any empty lines or comments
       for(int v = j+1; v<nlines; v++){
         if((lines[v].substr(0,1)!="#")&(lines[v].substr(0,1)!="")){
           log_data_start=v;
@@ -80,12 +81,13 @@ List splitHeaderLines(std::vector<std::string> lines) {
     std::string firstOne = line.substr(0,1);
     std::string firstTwo = line.substr(0,2);
     if((firstOne!="~") & (firstOne!="#") & (firstOne!="") & (firstTwo!="..")){
+      bool inside_brackets=false;
       for(int i = 0; i < numchar; i++){
         if((line[i]=='.') & (d1==0)){d1=i;}
         if((line[i]==' ') & (d1!=0) & (d2==0)){d2=i;}
-        if(line[i]==':'){d3=i;}
-        if(line[i]=='{'){d4=i;}
-        if(line[i]=='}'){d5=i;}
+        if((line[i]==':') & (inside_brackets==false)){d3=i;}
+        if(line[i]=='{'){d4=i; inside_brackets=true;}
+        if(line[i]=='}'){d5=i; inside_brackets=false;}
       }
       if((d1!=0) & (d2!=0) & (d3!=0) & (d1<d2) & (d2<d3) & (d3<numchar) & (sect!="")){
         parts[0][k]=sect;

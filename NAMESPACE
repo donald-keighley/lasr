@@ -2,6 +2,7 @@
 
 export(read.las)
 export(splitHeaderLines)
+import(data.table)
+import(parallel)
 importFrom(Rcpp,sourceCpp)
-importFrom(data.table,fread)
 useDynLib(lasr)
