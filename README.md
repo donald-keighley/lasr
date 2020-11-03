@@ -3,10 +3,10 @@ lasr
 Donny Keighley
 11/3/2020
 
-[lasr](https://github.com/lordkeighley/lasr) is a package designed for
-reading [Log Ascii Standard (LAS)](https://www.cwls.org/products/) files
-in R and compiling the data into tables. Currently it is in the beta
-testing stages.
+[lasr](https://github.com/donald-keighley/lasr) is a package designed
+for reading [Log Ascii Standard (LAS)](https://www.cwls.org/products/)
+files in R and compiling the data into tables. Currently it is in the
+beta testing stages.
 
 ## Goals
 
@@ -28,7 +28,7 @@ added including:
   - Matrix Identification
   - Writing LAS files
 
-[**lasr**](https://github.com/lordkeighley/lasr) is not designed to
+[**lasr**](https://github.com/donald-keighley/lasr) is not designed to
 accomplish traditional petrophysical workflows and there are no plans to
 do so. Also, while efforts will be made to handle some non-standard and
 erroneous LAS files, the goal is not to handle every edge case
@@ -41,7 +41,7 @@ python packages
 
 ## Installation
 
-You can install [**lasr**](https://github.com/lordkeighley/lasr) from
+You can install [**lasr**](https://github.com/donald-keighley/lasr) from
 github using the
 [*install\_github*](https://www.rdocumentation.org/packages/devtools/versions/1.13.6/topics/install_github)
 function from the [devtools](https://devtools.r-lib.org/) package.
@@ -49,7 +49,7 @@ function from the [devtools](https://devtools.r-lib.org/) package.
 ``` r
 if (!require('devtools')) install.packages('devtools')
 library(devtools)
-install_github('https://github.com/lordkeighley/lasr')
+install_github('https://github.com/donald-keighley/lasr')
 ```
 
 Currently, the only function is read.las which will import a vector of
@@ -144,7 +144,7 @@ time.taken = end.time - start.time
 time.taken
 ```
 
-    ## Time difference of 37.43598 secs
+    ## Time difference of 36.16316 secs
 
 Now in Python in parallel using 4 cores:
 
