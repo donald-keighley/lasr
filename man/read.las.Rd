@@ -15,7 +15,7 @@ read.las(paths, nthreads = 1)
 A two part list containing the LAS file and the header
 }
 \description{
-Imports an LAS file to R
+Imports a LAS file to R
 }
 \examples{
 las = read.las(system.file("extdata", "Jonah_Federal_20-5.las", package = "lasr"))

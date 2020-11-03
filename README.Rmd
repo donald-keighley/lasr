@@ -1,0 +1,32 @@
+---
+title: "lasr"
+author: "Donny Keighley"
+date: "11/2/2020"
+output: html_document
+---
+
+lasr is a package designed for reading Log Ascii Standard (LAS) files in R so that the data can be used in machine learning workflows.  Currently it is in the beta testing stages.
+
+## Goals
+
+lasr is primarily designed to help build large log data tables for use in machine learning workflows.  To accomplish this, files are read using fread from the data.table package.  The curves and headers are also stored as data.tables.  Parsing of the files is done using a custom C++ function connected with Rcpp.
+
+Ultimately, functions to standardize the log curves for a well will be added including:
+* Aliasing
+* Depth Merging
+* Unit Standardizing
+* Matrix Identification
+* Writing LAS files
+
+lasr is not designed to accomplish traditional petrophysical workflows and there are no plans to do so. Also, while efforts will be made to handle some non-standard and erroneous LAS files, the goal is not to handle every edge case perfectly.  Rather, files that produce errors will produce the most helpful error messages possible so that bad files can be checked and fixed.
+
+## Installation
+
+You can install lasr from github using the install_github function from the devtools package.
+
+```{r install lasr, eval=FALSE}
+if (!require('devtools')) install.packages('devtools')
+library(devtools)
+install_github('https://github.com/SerDonald/lasr')
+```
+

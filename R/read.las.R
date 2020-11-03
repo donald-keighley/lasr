@@ -2,7 +2,7 @@
 #' @title read.las.helper
 #' @description Imports an LAS file to R
 #' @import data.table
-#' @keyword internal
+#' @keywords internal
 #' @param path The path to the LAS file
 #' @return A two part list containing the LAS file and the header
 read.las.helper = function(path){
@@ -10,9 +10,9 @@ read.las.helper = function(path){
   #Assumes the file is bad unless it proves not to be
   bad_las=TRUE
   if(any(is.null(path), is.na(path), is.nan(path), !is.character(path))){
-    warning(paste0('File ', path, ' is not valid'))
+    warning(paste0(path, ': File path is not valid'))
   }else if(!file.exists(path)){
-    warning(paste0('File ', path, ' does not exist'))
+    warning(paste0(path, ':File does not exist'))
   }else{
     #Reads in the data as lines using fread for speed
     tryCatch({
@@ -21,9 +21,9 @@ read.las.helper = function(path){
         las = splitHeaderLines(lines)
         bad_las = FALSE
       }
-    }, error = function(e){
-      warning(paste0('File ', path, 'failed to read or parse properly'))
-    }) 
+      }, error = function(e){
+        return(warning(paste0(path, ': ', e$message)))
+      }) 
    }
   
   #Creates an empty dataset in case the file fails to read
@@ -42,7 +42,7 @@ read.las.helper = function(path){
 
 #' @name read.las
 #' @title read.las
-#' @description Imports an LAS file to R
+#' @description Imports a LAS file to R
 #' @import data.table
 #' @import parallel
 #' @export

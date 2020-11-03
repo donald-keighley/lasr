@@ -15,3 +15,4 @@ A two part list containing the LAS file and the header
 \description{
 Imports an LAS file to R
 }
+\keyword{internal}
