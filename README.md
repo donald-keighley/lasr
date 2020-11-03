@@ -27,7 +27,8 @@ Ultimately, functions to standardize the log curves for a well will be added inc
 
 You can install lasr from github using the [*install_github*](https://www.rdocumentation.org/packages/devtools/versions/1.13.6/topics/install_github) function from the [devtools](https://devtools.r-lib.org/) package.
 
-```{r install lasr, eval=FALSE}
+
+```r
 if (!require('devtools')) install.packages('devtools')
 library(devtools)
 install_github('https://github.com/SerDonald/lasr')
