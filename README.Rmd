@@ -1,7 +1,7 @@
 ---
 title: "lasr"
 author: "Donny Keighley"
-date: "11/2/2020"
+date: "11/3/2020"
 output: github_document
 ---
 
@@ -9,7 +9,7 @@ output: github_document
 
 ## Goals
 
-lasr is primarily designed to help build large log data tables for use in machine learning workflows.  To accomplish this, files are read using [*fread*](https://www.rdocumentation.org/packages/data.table/versions/1.13.2/topics/fread) from the [data.table](https://rdatatable.gitlab.io/data.table/) package.  The curves and headers are also stored as data.tables.  Parsing of the files is done using a custom C++ function connected with [Rcpp](http://www.rcpp.org/).
+lasr is primarily designed to help build large log data tables for use in non-standard workflows.  It is optimized for speed.  To accomplish this, files are read using [*fread*](https://www.rdocumentation.org/packages/data.table/versions/1.13.2/topics/fread) from the [data.table](https://rdatatable.gitlab.io/data.table/) package.  The curves and headers are also stored as data.tables.  Parsing of the files is done using a custom C++ function connected with [Rcpp](http://www.rcpp.org/).
 
 Ultimately, functions to standardize the log curves for a well will be added including:
 
@@ -19,11 +19,11 @@ Ultimately, functions to standardize the log curves for a well will be added inc
 * Matrix Identification
 * Writing LAS files
 
-[lasr](https://github.com/lordkeighley/lasr) is not designed to accomplish traditional petrophysical workflows and there are no plans to do so. Also, while efforts will be made to handle some non-standard and erroneous LAS files, the goal is not to handle every edge case perfectly.  Rather, files that produce errors will produce the most helpful error messages possible so that bad files can be checked and fixed.  Currently, it only pulls header and other curve data, though LAS files can contain other data such as tops.
+[**lasr**](https://github.com/lordkeighley/lasr) is not designed to accomplish traditional petrophysical workflows and there are no plans to do so. Also, while efforts will be made to handle some non-standard and erroneous LAS files, the goal is not to handle every edge case perfectly.  Rather, files that produce errors will produce the most helpful error messages possible so that bad files can be checked and fixed.  If these are your goals, you should check out the excellent python packages [**lasio**](https://lasio.readthedocs.io/en/latest/index.html) and [**welly**](https://welly.readthedocs.io/en/latest/api/welly.html).
 
 ## Installation
 
-You can install lasr from github using the [*install_github*](https://www.rdocumentation.org/packages/devtools/versions/1.13.6/topics/install_github) function from the [devtools](https://devtools.r-lib.org/) package.
+You can install [**lasr**](https://github.com/lordkeighley/lasr) from github using the [*install_github*](https://www.rdocumentation.org/packages/devtools/versions/1.13.6/topics/install_github) function from the [devtools](https://devtools.r-lib.org/) package.
 
 ```{r install lasr, eval=FALSE}
 if (!require('devtools')) install.packages('devtools')
@@ -31,5 +31,66 @@ library(devtools)
 install_github('https://github.com/lordkeighley/lasr')
 ```
 
+Currently, the only function is read.las which will import a vector of LAS file paths into a two part list.  The first element of the list is named header and contains a data.table of header data.  The second element of the list is named curves and contains a data.table of the associated log curve data.  If your vector of paths contains more than one file, the output will be a list of the aformentioned lists.
 
+Here is an example reading a single LAS file that is included with the package:
 
+```{r readlas, eval=TRUE, message=FALSE}
+library(lasr)
+las = read.las(system.file("extdata", "Jonah_Federal_20-5.las", package = "lasr"))
+
+head(las$header, 10)
+head(las$curves, 10)
+```
+
+## Speed Test
+
+Since the purpose of this package is to load LAS files as quickly as possible, a speed test is included here with a comparison to python's [**lasio**](https://lasio.readthedocs.io/en/latest/index.html).  First, download a test dataset from the KGS website.  In this case we're using the [2016 logs](http://www.kgs.ku.edu/PRS/Scans/Log_Summary/2016.zip) data.  Download and unzip them into a folder called *"C:/temp/logs"*, or modify the code for wherever you put it.
+
+Next, import the first 500 files.  We'll use 4 threads for this comparison, although if you have more cores you can increase the number of threads to speed it up further.  Only use this option if you are importing more than a handful of files, otherwise the parallel overhead will slow it down.
+
+```{r, import_kgs_logs, eval=TRUE}
+files = list.files('C:/temp/logs', pattern = '.las?', full.names=TRUE)
+start.time = Sys.time()
+las = read.las(files[1:500],nthreads=4)
+end.time = Sys.time()
+time.taken = end.time - start.time
+time.taken
+```
+
+Now in Python in parallel using 4 cores:
+
+```{r setup, include=FALSE}
+library(reticulate)
+use_python("C:/Users/donal/anaconda3")
+```
+
+```{python import_kgs_logs_lasio, eval=FALSE}
+import lasio, glob, datetime, multiprocessing
+from joblib import Parallel, delayed
+
+num_cores = 4
+files = glob.glob('C:/temp/logs/*.las')
+start_time = datetime.datetime.now()
+if __name__ == "__main__":
+    las = Parallel(n_jobs=num_cores)(delayed(lasio.read)(file) for file in files[0:499])
+end_time = datetime.datetime.now()
+print('Duration: {}'.format(end_time - start_time))
+```
+```{python print_time_python, echo=FALSE}
+print('Duration: 0:04:32.132885')
+```
+
+## Compiling Tables
+
+Eventually, this will probably built into a function, but for now if you want to compile the curve and header data into tables you can use the following code:
+
+```{r, compile_tables}
+#Make a compiled curve table
+curves = rbindlist(lapply(las, function(x) x$curves), fill=TRUE, use.names=TRUE)
+curves[,path:=rep(names(las), do.call(c, lapply(las, function(x) nrow(x$curves))))]
+
+#Make a compiled header table
+headers = rbindlist(lapply(las, function(x) x$header), fill=TRUE, use.names=TRUE)
+headers[,path:=rep(names(las), do.call(c, lapply(las, function(x) nrow(x$header))))]
+```
