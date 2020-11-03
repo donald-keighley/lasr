@@ -3,7 +3,7 @@ lasr
 Donny Keighley
 11/2/2020
 
-[lasr](https://github.com/SerDonald/lasr) is a package designed for
+[lasr](https://github.com/lordkeighley/lasr) is a package designed for
 reading [Log Ascii Standard (LAS)](https://www.cwls.org/products/) files
 in R and compiling the data into tables. Currently it is in the beta
 testing stages.
@@ -27,9 +27,9 @@ added including:
   - Matrix Identification
   - Writing LAS files
 
-[lasr](https://github.com/SerDonald/lasr) is not designed to accomplish
-traditional petrophysical workflows and there are no plans to do so.
-Also, while efforts will be made to handle some non-standard and
+[lasr](https://github.com/lordkeighley/lasr) is not designed to
+accomplish traditional petrophysical workflows and there are no plans to
+do so. Also, while efforts will be made to handle some non-standard and
 erroneous LAS files, the goal is not to handle every edge case
 perfectly. Rather, files that produce errors will produce the most
 helpful error messages possible so that bad files can be checked and
@@ -45,5 +45,5 @@ function from the [devtools](https://devtools.r-lib.org/) package.
 ``` r
 if (!require('devtools')) install.packages('devtools')
 library(devtools)
-install_github('https://github.com/SerDonald/lasr')
+install_github('https://github.com/lordkeighley/lasr')
 ```

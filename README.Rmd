@@ -5,7 +5,7 @@ date: "11/2/2020"
 output: github_document
 ---
 
-[lasr](https://github.com/SerDonald/lasr) is a package designed for reading [Log Ascii Standard (LAS)](https://www.cwls.org/products/) files in R and compiling the data into tables.  Currently it is in the beta testing stages.
+[lasr](https://github.com/lordkeighley/lasr) is a package designed for reading [Log Ascii Standard (LAS)](https://www.cwls.org/products/) files in R and compiling the data into tables.  Currently it is in the beta testing stages.
 
 ## Goals
 
@@ -19,7 +19,7 @@ Ultimately, functions to standardize the log curves for a well will be added inc
 * Matrix Identification
 * Writing LAS files
 
-[lasr](https://github.com/SerDonald/lasr) is not designed to accomplish traditional petrophysical workflows and there are no plans to do so. Also, while efforts will be made to handle some non-standard and erroneous LAS files, the goal is not to handle every edge case perfectly.  Rather, files that produce errors will produce the most helpful error messages possible so that bad files can be checked and fixed.  Currently, it only pulls header and other curve data, though LAS files can contain other data such as tops.
+[lasr](https://github.com/lordkeighley/lasr) is not designed to accomplish traditional petrophysical workflows and there are no plans to do so. Also, while efforts will be made to handle some non-standard and erroneous LAS files, the goal is not to handle every edge case perfectly.  Rather, files that produce errors will produce the most helpful error messages possible so that bad files can be checked and fixed.  Currently, it only pulls header and other curve data, though LAS files can contain other data such as tops.
 
 ## Installation
 
@@ -28,7 +28,7 @@ You can install lasr from github using the [*install_github*](https://www.rdocum
 ```{r install lasr, eval=FALSE}
 if (!require('devtools')) install.packages('devtools')
 library(devtools)
-install_github('https://github.com/SerDonald/lasr')
+install_github('https://github.com/lordkeighley/lasr')
 ```
 
 
