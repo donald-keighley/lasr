@@ -5,4 +5,5 @@
 src/*.o
 src/*.so
 src/*.dll
-.gitignore
+src/*.Rmd
+2015.zip

@@ -4,18 +4,20 @@
 \alias{read.las}
 \title{read.las}
 \usage{
-read.las(paths, nthreads = 1)
+read.las(paths, nthreads = 1, header_only = F)
 }
 \arguments{
 \item{paths}{A vector of LAS file paths}
 
 \item{nthreads}{An integer indicating the number of threads to use}
+
+\item{header_only}{TRUE or FALSE depending on whether you want to return only header data.}
 }
 \value{
-A two part list containing the LAS file and the header
+A list containing a Version, Well, and Curveset sections.
 }
 \description{
-Imports a LAS file to R
+This function imports a LAS file to R.
 }
 \examples{
 las = read.las(system.file("extdata", "Jonah_Federal_20-5.las", package = "lasr"))

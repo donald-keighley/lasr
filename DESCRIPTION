@@ -1,7 +1,7 @@
 Package: lasr
 Type: Package
 Title: Reads and writes LAS files for R
-Version: 1.0.1
+Version: 1.1.0
 Date: 2020-11-02
 Author: Donald Keighley
 Maintainer: Donald Keighley <donald.keighley@gmail.com>

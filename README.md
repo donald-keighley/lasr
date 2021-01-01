@@ -1,32 +1,30 @@
 lasr
 ================
 Donny Keighley
-11/3/2020
+1/1/2021
 
 [lasr](https://github.com/donald-keighley/lasr) is a package designed
 for reading [Log Ascii Standard (LAS)](https://www.cwls.org/products/)
 files in R and compiling the data into tables. Currently it is in the
-beta testing stages.
+beta testing stages. Recently it was modified to more fully support LAS
+3.0.
 
-## Goals
+Goals
+-----
 
 lasr is primarily designed to help build large log data tables for use
 in non-standard workflows. It is optimized for speed. To accomplish
-this, files are read using
-[*fread*](https://www.rdocumentation.org/packages/data.table/versions/1.13.2/topics/fread)
-from the [data.table](https://rdatatable.gitlab.io/data.table/) package.
-The curves and headers are also stored as data.tables. Parsing of the
-files is done using a custom C++ function connected with
+this, most of it is written in C++ and connected to R with
 [Rcpp](http://www.rcpp.org/).
 
 Ultimately, functions to standardize the log curves for a well will be
 added including:
 
-  - Aliasing
-  - Depth Merging
-  - Unit Standardizing
-  - Matrix Identification
-  - Writing LAS files
+-   Aliasing
+-   Depth Merging
+-   Unit Standardizing
+-   Matrix Identification
+-   Writing LAS files
 
 [**lasr**](https://github.com/donald-keighley/lasr) is not designed to
 accomplish traditional petrophysical workflows and there are no plans to
@@ -39,7 +37,8 @@ python packages
 [**lasio**](https://lasio.readthedocs.io/en/latest/index.html) and
 [**welly**](https://welly.readthedocs.io/en/latest/api/welly.html).
 
-## Installation
+Installation
+------------
 
 You can install [**lasr**](https://github.com/donald-keighley/lasr) from
 github using the
@@ -53,11 +52,12 @@ install_github('https://github.com/donald-keighley/lasr')
 ```
 
 Currently, the only function is read.las which will import a vector of
-LAS file paths into a two part list. The first element of the list is
-named header and contains a data.table of header data. The second
-element of the list is named curves and contains a data.table of the
-associated log curve data. If your vector of paths contains more than
-one file, the output will be a list of the aformentioned lists.
+LAS file paths into a multi-part list. Each section of the file is now
+stored as a separate element. In order to accomodate LAS 3.0 files which
+may have multiple log data sections, the log parameter, log definition,
+and log data are combined into one element called a “curveset”. If your
+vector of paths contains more than one file, the output will be a list
+of the aformentioned lists.
 
 Here is an example reading a single LAS file that is included with the
 package:
@@ -66,34 +66,36 @@ package:
 library(lasr)
 las = read.las(system.file("extdata", "Jonah_Federal_20-5.las", package = "lasr"))
 
-head(las$header, 10)
+#Display the WELL section
+head(las$WELL, 10)
 ```
 
-    ##     SECTION    MNEM UNIT                  VALUE
-    ##  1: VERSION    VERS                         2.0
-    ##  2: VERSION    WRAP                          NO
-    ##  3: VERSION    PROD                Schlumberger
-    ##  4: VERSION    PROG           DLIS to ASCII 2.2
-    ##  5: VERSION    CREA            2015/01/05 09:49
-    ##  6: VERSION  SOURCE      JF 20-5_Main Pass.DLIS
-    ##  7: VERSION FILE-ID         SCMT_RST_PSP_012LUP
-    ##  8:    WELL    STRT    F                12063.0
-    ##  9:    WELL    STOP    F                 6915.0
-    ## 10:    WELL    STEP    F                   -0.5
-    ##                                   COMMENT           FORMAT
-    ##  1: CWLS Log ASCII Standard - VERSION 2.0                 
-    ##  2:               One Line per depth step                 
-    ##  3:                          LAS Producer                 
-    ##  4:          LAS Program name and version                 
-    ##  5:                     LAS Creation date YYYY/MM/DD hh:mm
-    ##  6:                        DLIS File Name                 
-    ##  7:            File Identification Number                 
-    ##  8:                           START DEPTH                 
-    ##  9:                            STOP DEPTH                 
-    ## 10:                                  STEP
+    ##     MNEMONIC UNIT                            VALUE     COMMENT FORMAT
+    ##  1:     STRT    F                          12063.0 START DEPTH       
+    ##  2:     STOP    F                           6915.0  STOP DEPTH       
+    ##  3:     STEP    F                             -0.5        STEP       
+    ##  4:     NULL                               -999.25  NULL VALUE       
+    ##  5:     COMP           Encana Oil & Gas (USA) Inc.     COMPANY       
+    ##  6:     WELL                    Jonah Federal 20-5        WELL       
+    ##  7:      FLD                                 Jonah       FIELD       
+    ##  8:      LOC      SHL: Lot-6, 690' FNL & 2203' FEL    LOCATION       
+    ##  9:     CNTY                              Sublette      COUNTY       
+    ## 10:     STAT                               Wyoming       STATE       
+    ##     ASSOCIATION
+    ##  1:            
+    ##  2:            
+    ##  3:            
+    ##  4:            
+    ##  5:            
+    ##  6:            
+    ##  7:            
+    ##  8:            
+    ##  9:            
+    ## 10:
 
 ``` r
-head(las$curves, 10)
+#Display the log curves
+head(las$CURVESETS$CURVESET_1$LOG_DATA, 10)
 ```
 
     ##        DEPT CIRN_FIL CIRF_FIL INND_FIL INFD_FIL   IRAT IRAT_FIL    SIGM
@@ -119,7 +121,8 @@ head(las$curves, 10)
     ##  9: 5381.087 8110.229 0.6524   0.6637 0.0610 25.8075 231.6347 3.2347    0
     ## 10: 5409.057 8309.733 0.6596   0.6510 0.0548 25.8075 231.6347 3.2273    0
 
-## Speed Test
+Speed Test
+----------
 
 Since the purpose of this package is to load LAS files as quickly as
 possible, a speed test is included here with a comparison to python’s
@@ -144,7 +147,7 @@ time.taken = end.time - start.time
 time.taken
 ```
 
-    ## Time difference of 36.16316 secs
+    ## Time difference of 31.80392 secs
 
 Now in Python in parallel using 4 cores:
 
@@ -163,18 +166,11 @@ print('Duration: {}'.format(end_time - start_time))
 
     ## Duration: 0:04:32.132885
 
-## Compiling Tables
+Future work
+-----------
 
-Eventually, this will probably built into a function, but for now if you
-want to compile the curve and header data into tables you can use the
-following code:
-
-``` r
-#Make a compiled curve table
-curves = rbindlist(lapply(las, function(x) x$curves), fill=TRUE, use.names=TRUE)
-curves[,path:=rep(names(las), do.call(c, lapply(las, function(x) nrow(x$curves))))]
-
-#Make a compiled header table
-headers = rbindlist(lapply(las, function(x) x$header), fill=TRUE, use.names=TRUE)
-headers[,path:=rep(names(las), do.call(c, lapply(las, function(x) nrow(x$header))))]
-```
+Currently, the focus is on testing with as many files as possible in
+order to find and fix bugs and add error messages. In terms of
+functionality, writing a function to export LAS files will probably be
+next. Adding additional functions to parse some of the other LAS 3.0
+sections like Core and Tops is high on the list as well.

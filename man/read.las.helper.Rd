@@ -4,10 +4,12 @@
 \alias{read.las.helper}
 \title{read.las.helper}
 \usage{
-read.las.helper(path)
+read.las.helper(path, header_only = F)
 }
 \arguments{
 \item{path}{The path to the LAS file}
+
+\item{header_only}{TRUE or FALSE depending on whether you want to return only header data.}
 }
 \value{
 A two part list containing the LAS file and the header

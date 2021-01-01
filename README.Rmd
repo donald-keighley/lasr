@@ -1,15 +1,15 @@
 ---
 title: "lasr"
 author: "Donny Keighley"
-date: "11/3/2020"
+date: "1/1/2021"
 output: github_document
 ---
 
-[lasr](https://github.com/donald-keighley/lasr) is a package designed for reading [Log Ascii Standard (LAS)](https://www.cwls.org/products/) files in R and compiling the data into tables.  Currently it is in the beta testing stages.
+[lasr](https://github.com/donald-keighley/lasr) is a package designed for reading [Log Ascii Standard (LAS)](https://www.cwls.org/products/) files in R and compiling the data into tables.  Currently it is in the beta testing stages.  Recently it was modified to more fully support LAS 3.0.
 
 ## Goals
 
-lasr is primarily designed to help build large log data tables for use in non-standard workflows.  It is optimized for speed.  To accomplish this, files are read using [*fread*](https://www.rdocumentation.org/packages/data.table/versions/1.13.2/topics/fread) from the [data.table](https://rdatatable.gitlab.io/data.table/) package.  The curves and headers are also stored as data.tables.  Parsing of the files is done using a custom C++ function connected with [Rcpp](http://www.rcpp.org/).
+lasr is primarily designed to help build large log data tables for use in non-standard workflows.  It is optimized for speed.  To accomplish this, most of it is written in C++ and connected to R with [Rcpp](http://www.rcpp.org/).
 
 Ultimately, functions to standardize the log curves for a well will be added including:
 
@@ -31,7 +31,7 @@ library(devtools)
 install_github('https://github.com/donald-keighley/lasr')
 ```
 
-Currently, the only function is read.las which will import a vector of LAS file paths into a two part list.  The first element of the list is named header and contains a data.table of header data.  The second element of the list is named curves and contains a data.table of the associated log curve data.  If your vector of paths contains more than one file, the output will be a list of the aformentioned lists.
+Currently, the only function is read.las which will import a vector of LAS file paths into a multi-part list.  Each section of the file is now stored as a separate element.  In order to accomodate LAS 3.0 files which may have multiple log data sections, the log parameter, log definition, and log data are combined into one element called a "curveset".  If your vector of paths contains more than one file, the output will be a list of the aformentioned lists.
 
 Here is an example reading a single LAS file that is included with the package:
 
@@ -39,8 +39,11 @@ Here is an example reading a single LAS file that is included with the package:
 library(lasr)
 las = read.las(system.file("extdata", "Jonah_Federal_20-5.las", package = "lasr"))
 
-head(las$header, 10)
-head(las$curves, 10)
+#Display the WELL section
+head(las$WELL, 10)
+
+#Display the log curves
+head(las$CURVESETS$CURVESET_1$LOG_DATA, 10)
 ```
 
 ## Speed Test
@@ -81,16 +84,6 @@ print('Duration: {}'.format(end_time - start_time))
 print('Duration: 0:04:32.132885')
 ```
 
-## Compiling Tables
+## Future work
 
-Eventually, this will probably built into a function, but for now if you want to compile the curve and header data into tables you can use the following code:
-
-```{r, compile_tables}
-#Make a compiled curve table
-curves = rbindlist(lapply(las, function(x) x$curves), fill=TRUE, use.names=TRUE)
-curves[,path:=rep(names(las), do.call(c, lapply(las, function(x) nrow(x$curves))))]
-
-#Make a compiled header table
-headers = rbindlist(lapply(las, function(x) x$header), fill=TRUE, use.names=TRUE)
-headers[,path:=rep(names(las), do.call(c, lapply(las, function(x) nrow(x$header))))]
-```
+Currently, the focus is on testing with as many files as possible in order to find and fix bugs and add error messages.  In terms of functionality, writing a function to export LAS files will probably be next.  Adding additional functions to parse some of the other LAS 3.0 sections like Core and Tops is high on the list as well.

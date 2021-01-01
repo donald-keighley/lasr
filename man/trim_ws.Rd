@@ -3,12 +3,15 @@
 \name{trim_ws}
 \alias{trim_ws}
 \title{trim_ws}
+\usage{
+trim_ws(s)
+}
 \arguments{
-\item{s}{A single string}
+\item{s}{A string}
 }
 \value{
-A string with no leading or trailing spaces
+A string with no whitespace
 }
 \description{
-Removes leading and trailing spaces from a string
+A function to trim the whitespace from the ends of a string
 }

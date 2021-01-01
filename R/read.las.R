@@ -4,9 +4,10 @@
 #' @import data.table
 #' @keywords internal
 #' @param path The path to the LAS file
+#' @param header_only TRUE or FALSE depending on whether you want to return only header data.
 #' @return A two part list containing the LAS file and the header
-read.las.helper = function(path){
-
+read.las.helper = function(path, header_only=F){
+  
   #Assumes the file is bad unless it proves not to be
   bad_las=TRUE
   if(any(is.null(path), is.na(path), is.nan(path), !is.character(path))){
@@ -16,56 +17,46 @@ read.las.helper = function(path){
   }else{
     #Reads in the data as lines using fread for speed
     tryCatch({
-      lines = suppressWarnings(fread(path, sep=NULL, header=FALSE, showProgress=FALSE, quote="", col.names='line')$line)
-      if(length(lines)>0){
-        las = splitHeaderLines(lines)
-        bad_las = FALSE
-      }
-      }, error = function(e){
-        return(warning(paste0(path, ': ', e$message)))
-      }) 
-   }
-  
-  #Creates an empty dataset in case the file fails to read
-  if(bad_las==TRUE){
-    char_na = as.character(NA)
-    header = data.frame("SECTION"=char_na, "MNEM"=char_na, "UNIT"=char_na,"VALUE"=char_na, "COMMENT"=char_na,"FORMAT"=char_na)
-    las = list('header'=header, 'curves'=NULL)
+      las = read_las_cpp(path, header_only)
+      bad_las = FALSE
+    }, error = function(e){
+      return(warning(paste0(path, ': ', e$message)))
+    }) 
   }
   
-  #Converts to a data.table, names the list after the file path
-  las$header=as.data.table(las$header)
-  las$curves=as.data.table(las$curves)
+  #Returns a null value in case it fails to read
+  if(bad_las==TRUE){las = NULL}
   
   return(las)
 }
 
 #' @name read.las
 #' @title read.las
-#' @description Imports a LAS file to R
+#' @description This function imports a LAS file to R.
 #' @import data.table
 #' @import parallel
 #' @export
 #' @param paths A vector of LAS file paths
 #' @param nthreads An integer indicating the number of threads to use
-#' @return A two part list containing the LAS file and the header
+#' @param header_only TRUE or FALSE depending on whether you want to return only header data.
+#' @return A list containing a Version, Well, and Curveset sections.
 #' @examples
 #' las = read.las(system.file("extdata", "Jonah_Federal_20-5.las", package = "lasr"))
-read.las = function(paths, nthreads=1){
+read.las = function(paths, nthreads=1, header_only=F){
   if(length(paths)>1){
     if(nthreads > 1){
       cores = min(detectCores(logical=TRUE), nthreads)
       cl = makeCluster(cores)
       clusterEvalQ(cl, {library(lasr)})
       clusterExport(cl, c("files", "read.las.helper"), envir=environment())
-      las = parLapply(cl, paths, read.las.helper)
+      las = parLapply(cl, paths, read.las.helper, header_only = header_only)
       stopCluster(cl)
     }else{
-      las = lapply(paths, read.las.helper)
+      las = lapply(paths, read.las.helper, header_only = header_only)
     }
     names(las) = paths
   }else{
-    las = read.las.helper(paths[1])
+    las = read.las.helper(paths[1], header_only = header_only)
   }
   return(las)
 }
