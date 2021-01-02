@@ -80,7 +80,7 @@ Rcpp::List read_las_cpp(std::vector<std::string>& lines, bool header_only = fals
         curveset[1] = df_temp;
         int ai = ci[i][2];
         if((!header_only) & (ai>0)){
-          curveset[2] = parse_curves(lines, df_temp["MNEMONIC"], delim, null_val, las_map.start_index(ai), las_map.end_index(ai));
+          curveset[2] = parse_curves(lines, df_temp["MNEMONIC"],  df_temp["FORMAT"],delim, null_val, las_map.start_index(ai), las_map.end_index(ai));
         }
       }
       curvesets[i] = curveset;

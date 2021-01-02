@@ -6,18 +6,19 @@
 using namespace Rcpp;
 
 // parse_curves
-Rcpp::DataFrame parse_curves(std::vector<std::string> const& lines, Rcpp::CharacterVector const& curve_names, std::string delim, double null_val, int first_line, int last_line);
-RcppExport SEXP _lasr_parse_curves(SEXP linesSEXP, SEXP curve_namesSEXP, SEXP delimSEXP, SEXP null_valSEXP, SEXP first_lineSEXP, SEXP last_lineSEXP) {
+Rcpp::List parse_curves(std::vector<std::string> const& lines, Rcpp::CharacterVector const& curve_names, Rcpp::CharacterVector const& format, std::string delim, double null_val, int first_line, int last_line);
+RcppExport SEXP _lasr_parse_curves(SEXP linesSEXP, SEXP curve_namesSEXP, SEXP formatSEXP, SEXP delimSEXP, SEXP null_valSEXP, SEXP first_lineSEXP, SEXP last_lineSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::vector<std::string> const& >::type lines(linesSEXP);
     Rcpp::traits::input_parameter< Rcpp::CharacterVector const& >::type curve_names(curve_namesSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector const& >::type format(formatSEXP);
     Rcpp::traits::input_parameter< std::string >::type delim(delimSEXP);
     Rcpp::traits::input_parameter< double >::type null_val(null_valSEXP);
     Rcpp::traits::input_parameter< int >::type first_line(first_lineSEXP);
     Rcpp::traits::input_parameter< int >::type last_line(last_lineSEXP);
-    rcpp_result_gen = Rcpp::wrap(parse_curves(lines, curve_names, delim, null_val, first_line, last_line));
+    rcpp_result_gen = Rcpp::wrap(parse_curves(lines, curve_names, format, delim, null_val, first_line, last_line));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -97,7 +98,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_lasr_parse_curves", (DL_FUNC) &_lasr_parse_curves, 6},
+    {"_lasr_parse_curves", (DL_FUNC) &_lasr_parse_curves, 7},
     {"_lasr_trim_ws", (DL_FUNC) &_lasr_trim_ws, 1},
     {"_lasr_parse_header", (DL_FUNC) &_lasr_parse_header, 3},
     {"_lasr_get_header_double", (DL_FUNC) &_lasr_get_header_double, 3},

@@ -11,8 +11,8 @@
 #' @param first_line An integer indicating the index of the first line in lines containing log data
 #' @param last_line An integer indicating the last index of lines containing log data.
 #' @return A dataframe containing the curves
-parse_curves <- function(lines, curve_names, delim = " ", null_val = -999.25, first_line = 0L, last_line = -1L) {
-    .Call('_lasr_parse_curves', PACKAGE = 'lasr', lines, curve_names, delim, null_val, first_line, last_line)
+parse_curves <- function(lines, curve_names, format, delim = " ", null_val = -999.25, first_line = 0L, last_line = -1L) {
+    .Call('_lasr_parse_curves', PACKAGE = 'lasr', lines, curve_names, format, delim, null_val, first_line, last_line)
 }
 
 #' @name trim_ws
