@@ -33,7 +33,8 @@ Rcpp::List read_las_cpp(std::vector<std::string>& lines, bool header_only = fals
       sect_begin = n+1;
     }
   }
-  las_map.push_back(sect_string, sect_begin, n);
+  if((sect_string.size()>0) & (n>=sect_begin)){las_map.push_back(sect_string, sect_begin, n);}
+  if(las_map.size()==0){Rcpp::stop("No sections found, possibly not a LAS file?");}
   
   //Gets the indices of the various sections
   int vi = las_map.version_index();
@@ -48,38 +49,47 @@ Rcpp::List read_las_cpp(std::vector<std::string>& lines, bool header_only = fals
   Rcpp::DataFrame df_temp;
 
   //Gets the version section
-  df_temp = parse_header(lines, las_map.start_index(vi), las_map.end_index(vi));
-  las_list[0] = df_temp;
-  std::string delim = get_header_string(df_temp, "DLM");
+  std::string delim = " ";
+  if(vi>=0){
+    df_temp = parse_header(lines, las_map.start_index(vi), las_map.end_index(vi));
+    las_list[0] = df_temp;
+    delim = get_header_string(df_temp, "DLM");
+  }
 
   //Gets the well section and null value
-  df_temp = parse_header(lines, las_map.start_index(wi), las_map.end_index(wi));
-  las_list[1] = df_temp;
-  double null_val = get_header_double(df_temp, "NULL", -999.25);
+  double null_val = -999.25;
+  if(wi>=0){
+    df_temp = parse_header(lines, las_map.start_index(wi), las_map.end_index(wi));
+    las_list[1] = df_temp;
+    null_val = get_header_double(df_temp, "NULL", -999.25);
+  }
 
   //Gets the curvesets
   std::vector<std::string> curveset_names(num_curves);
-  for(int i=0; i<num_curves; i++){
-    Rcpp::List curveset(3);
-    curveset.attr("names") = Rcpp::CharacterVector({"LOG_PARAMETER","LOG_DEFINITION","LOG_DATA"});
-    int pi = ci[i][0];
-    if(pi>0){
-      curveset[0] = parse_header(lines, las_map.start_index(pi), las_map.end_index(pi));
-    }
-    int li = ci[i][1];
-    if(li>0){
-      df_temp = parse_header(lines, las_map.start_index(li), las_map.end_index(li));
-      curveset[1] = df_temp;
-      int ai = ci[i][2];
-      if((!header_only) & (ai>0)){
-        curveset[2] = parse_curves(lines, df_temp["MNEMONIC"], delim, null_val, las_map.start_index(ai), las_map.end_index(ai));
+  if(num_curves>0){
+    for(int i=0; i<num_curves; i++){
+      Rcpp::List curveset(3);
+      curveset.attr("names") = Rcpp::CharacterVector({"LOG_PARAMETER","LOG_DEFINITION","LOG_DATA"});
+      int pi = ci[i][0];
+      if(pi>0){
+        curveset[0] = parse_header(lines, las_map.start_index(pi), las_map.end_index(pi));
       }
+      int li = ci[i][1];
+      if(li>0){
+        df_temp = parse_header(lines, las_map.start_index(li), las_map.end_index(li));
+        curveset[1] = df_temp;
+        int ai = ci[i][2];
+        if((!header_only) & (ai>0)){
+          curveset[2] = parse_curves(lines, df_temp["MNEMONIC"], delim, null_val, las_map.start_index(ai), las_map.end_index(ai));
+        }
+      }
+      curvesets[i] = curveset;
+      curveset_names[i] = "CURVESET_" + std::to_string(i+1);
     }
-    curvesets[i] = curveset;
-    curveset_names[i] = "CURVESET_" + std::to_string(i+1);
+    curvesets.attr("names") = curveset_names;
+    las_list[2] = curvesets;
   }
-  curvesets.attr("names") = curveset_names;
-  las_list[2] = curvesets;
+
   return(las_list);
 }
 

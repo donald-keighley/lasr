@@ -14,8 +14,8 @@ namespace{
 void LasMap::push_back(std::string section_string, int start_index, int end_index){
   std::transform(section_string.begin(), section_string.end(), section_string.begin(), ::toupper);
   std::size_t association_delim = section_string.find_first_of("|",1);
-  std::string name_str;
-  std::string association_str;
+  std::string name_str = "";
+  std::string association_str = "";
   if(association_delim != std::string::npos){
     name_str = trim_ws(section_string.substr(1,association_delim-1));
     association_str = trim_ws(section_string.substr(association_delim + 1, section_string.size()));
@@ -37,7 +37,7 @@ void LasMap::push_back(std::string section_string, int start_index, int end_inde
   association.emplace_back(association_str);
   start.emplace_back(start_index);
   end.emplace_back(end_index);
-  
+  n++;
 }
 
 //Finds the first section name that begins with a V
@@ -119,15 +119,12 @@ std::vector<std::vector<int> > LasMap::curveset_indices(){
 }
 
 //This method is basically just for troubleshooting
-Rcpp::List LasMap::dataframe(){
-  Rcpp::List df;
-  df.push_back(name);
-  df.push_back(root_name);
-  df.push_back(number);
-  df.push_back(association);
-  df.push_back(start);
-  df.push_back(end);
-  df.attr("names") = Rcpp::CharacterVector::create("NAME", "ROOT_NAME", "NUMBER", "ASSOCIATION", "START", "END");
-  df.attr("class") = Rcpp::CharacterVector::create("data.frame");
+Rcpp::DataFrame LasMap::dataframe(){
+  Rcpp::DataFrame df = Rcpp::DataFrame::create(_["NAME"] = name, 
+                                               _["ROOT_NAME"] = root_name,
+                                               _["NUMBER"] = number,
+                                               _["ASSOCIATION"] = association,
+                                               _["START"] = start,
+                                               _["END"] = end);
   return(df);
 }
