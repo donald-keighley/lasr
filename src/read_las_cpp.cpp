@@ -13,33 +13,24 @@
 //' @name read_las_cpp
 //' @title read_las_cpp
 //' @description A function to read LAS files.  Not really meant to be called by the user.
-//' @param path A file path
+//' @param lines A vector of lines with blank lines and leading whitespace removed
 //' @param header_only If true, will only return the header portions.
 //' @return A two part list
-//' @export
 // [[Rcpp::export]]
-Rcpp::List read_las_cpp(std::string path, bool header_only = false){
-  
-  //Loads all the lines of the file, removes leading whitespace, comments, blanks
-  std::ifstream lasfile;
-  //lasfile.imbue(std::locale(lasfile.getloc(), new std::codecvt_utf8<wchar_t>));
-  lasfile.open(path);
-  std::vector<std::string> lines;
+Rcpp::List read_las_cpp(std::vector<std::string>& lines, bool header_only = false){
+  // Removes comments
+  lines.erase(std::remove_if(lines.begin(), lines.end(), [](std::string& x) { return x.substr(0,1)=="#";}), lines.end());
   std::string line;
   LasMap las_map;
   std::string sect_string = "";
   int sect_begin = -1;
-  int n = 0;  //Line counter
-  
-  while (std::getline(lasfile, line)) {
-    line.erase(0, line.find_first_not_of(" \t"));   //Removes leading whitespace
-    if((line.size()!=0) & (line[0]!='#') & (line[0]!='~')){
-      lines.emplace_back(line);
-      n++;
-    }else if(line[0]=='~'){
-      if(sect_string.size()>0){las_map.push_back(sect_string, sect_begin, n-1);}
+  int n = 0;
+  for(n=0; n<(int)lines.size(); n++) {
+    line = lines[n];
+    if(line[0]=='~'){
+      if((sect_string.size()>0) & ((n-1)>=sect_begin)){las_map.push_back(sect_string, sect_begin, n-1);}
       sect_string = line;
-      sect_begin = n;
+      sect_begin = n+1;
     }
   }
   las_map.push_back(sect_string, sect_begin, n);
@@ -89,7 +80,6 @@ Rcpp::List read_las_cpp(std::string path, bool header_only = false){
   }
   curvesets.attr("names") = curveset_names;
   las_list[2] = curvesets;
-
   return(las_list);
 }
 

@@ -4,7 +4,7 @@
 \alias{read.las.helper}
 \title{read.las.helper}
 \usage{
-read.las.helper(path, header_only = F)
+read.las.helper(path, header_only = FALSE)
 }
 \arguments{
 \item{path}{The path to the LAS file}

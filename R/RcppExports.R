@@ -11,7 +11,6 @@
 #' @param first_line An integer indicating the index of the first line in lines containing log data
 #' @param last_line An integer indicating the last index of lines containing log data.
 #' @return A dataframe containing the curves
-#' @export
 parse_curves <- function(lines, curve_names, delim = " ", null_val = -999.25, first_line = 0L, last_line = -1L) {
     .Call('_lasr_parse_curves', PACKAGE = 'lasr', lines, curve_names, delim, null_val, first_line, last_line)
 }
@@ -21,7 +20,6 @@ parse_curves <- function(lines, curve_names, delim = " ", null_val = -999.25, fi
 #' @description A function to trim the whitespace from the ends of a string
 #' @param s A string
 #' @return A string with no whitespace
-#' @export
 trim_ws <- function(s) {
     .Call('_lasr_trim_ws', PACKAGE = 'lasr', s)
 }
@@ -33,7 +31,6 @@ trim_ws <- function(s) {
 #' @param first_line An integer indicating the index of the first line in lines containing header data.
 #' @param last_line An integer indicating the last index of lines containing header data.
 #' @return A dataframe containing the header data.
-#' @export
 parse_header <- function(lines, first_line = 0L, last_line = -1L) {
     .Call('_lasr_parse_header', PACKAGE = 'lasr', lines, first_line, last_line)
 }
@@ -78,11 +75,10 @@ get_header_string <- function(header, mnem) {
 #' @name read_las_cpp
 #' @title read_las_cpp
 #' @description A function to read LAS files.  Not really meant to be called by the user.
-#' @param path A file path
+#' @param lines A vector of lines with blank lines and leading whitespace removed
 #' @param header_only If true, will only return the header portions.
 #' @return A two part list
-#' @export
-read_las_cpp <- function(path, header_only = FALSE) {
-    .Call('_lasr_read_las_cpp', PACKAGE = 'lasr', path, header_only)
+read_las_cpp <- function(lines, header_only = FALSE) {
+    .Call('_lasr_read_las_cpp', PACKAGE = 'lasr', lines, header_only)
 }
 

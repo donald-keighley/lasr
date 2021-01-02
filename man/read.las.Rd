@@ -4,14 +4,16 @@
 \alias{read.las}
 \title{read.las}
 \usage{
-read.las(paths, nthreads = 1, header_only = F)
+read.las(paths, nthreads = 1, header_only = FALSE)
 }
 \arguments{
-\item{paths}{A vector of LAS file paths}
+\item{paths}{A vector of LAS file paths.}
 
-\item{nthreads}{An integer indicating the number of threads to use}
+\item{nthreads}{An integer indicating the number of threads to use.  If the number of 
+threads and paths is greater than one it will run in parallel.  Default is one.}
 
-\item{header_only}{TRUE or FALSE depending on whether you want to return only header data.}
+\item{header_only}{TRUE or FALSE depending on whether you want to return only header data. 
+If you only want headers, this will run faster.}
 }
 \value{
 A list containing a Version, Well, and Curveset sections.

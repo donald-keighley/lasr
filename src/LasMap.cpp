@@ -128,6 +128,6 @@ Rcpp::List LasMap::dataframe(){
   df.push_back(start);
   df.push_back(end);
   df.attr("names") = Rcpp::CharacterVector::create("NAME", "ROOT_NAME", "NUMBER", "ASSOCIATION", "START", "END");
-  df.attr("class") = Rcpp::CharacterVector::create("data.table", "data.frame");
+  df.attr("class") = Rcpp::CharacterVector::create("data.frame");
   return(df);
 }

@@ -5,7 +5,6 @@
 //' @description A function to trim the whitespace from the ends of a string
 //' @param s A string
 //' @return A string with no whitespace
-//' @export
 // [[Rcpp::export]]
 std::string trim_ws(std::string s){ 
   s.erase(0, s.find_first_not_of(" \t"));
@@ -20,7 +19,6 @@ std::string trim_ws(std::string s){
 //' @param first_line An integer indicating the index of the first line in lines containing header data.
 //' @param last_line An integer indicating the last index of lines containing header data.
 //' @return A dataframe containing the header data.
-//' @export
 // [[Rcpp::export]]
 Rcpp::DataFrame parse_header(std::vector<std::string> const &lines, int first_line = 0, int last_line = -1){
   //Sets the last line to the end of the vector if the line is not given

@@ -10,7 +10,6 @@
 //' @param first_line An integer indicating the index of the first line in lines containing log data
 //' @param last_line An integer indicating the last index of lines containing log data.
 //' @return A dataframe containing the curves
-//' @export
 // [[Rcpp::export]]
 Rcpp::DataFrame parse_curves(std::vector<std::string> const &lines,
                              Rcpp::CharacterVector const &curve_names,
