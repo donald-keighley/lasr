@@ -63,5 +63,6 @@ read.las = function(paths, nthreads=1, header_only=FALSE){
   }else{
     las = read.las.helper(paths[1], header_only = header_only)
   }
+  
   return(las)
 }

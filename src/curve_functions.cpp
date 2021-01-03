@@ -32,15 +32,15 @@ Rcpp::List parse_curves(std::vector<std::string> const &lines,
   //Parses the curves.  Doesn't need to know if it's wrapped, will work either way.
   int row_index=0;
   int col_index=0;
-  std::size_t start; std::size_t end; std::string token; std::string line;
+  std::size_t start; std::size_t end; std::string line;
   //If the delimiter is a space, consecutive delimiters are treated as one:
   if(delim == " "){
     for(int line_index = first_line; line_index<last_line; line_index++){
       start=0; end=0; line=lines[line_index];
       while(end<std::string::npos){
-        start=line.find_first_not_of(delim,end);                      //Gets the position of the first non-delimiter character
-        end=line.find_first_of(delim,start);                          //Gets the position of the first delimiter character
-        curves[col_index][row_index] = line.substr(start,end-start);  //Records the value if not null
+        start=line.find_first_not_of(delim,end);
+        end=line.find_first_of(delim,start);
+        if(end>start){curves[col_index][row_index] = line.substr(start,end-start);}
         col_index++;
         if(col_index>=ncol){col_index=0; row_index++; break;}
       }
@@ -48,14 +48,11 @@ Rcpp::List parse_curves(std::vector<std::string> const &lines,
   //If the delimiter is not a space, consecutive delimiters are not treated as one:
   }else{
     for(int line_index = first_line; line_index<last_line; line_index++){
-      start=0; end=0; token = ""; line=lines[line_index];
+      start=0; end=0; line=lines[line_index];
       while(end<std::string::npos){
-        end=line.find(delim,start);            //Finds the position of the next delimiter
-        token = line.substr(start,end-start);  //Gets the token string
-        start=end+1;                           //Sets the position of the start to the last end
-        if(token != ""){
-          curves[col_index][row_index]=token; //Records the value if not null
-        }
+        end=line.find(delim,start);
+        if(end>start){curves[col_index][row_index]=line.substr(start,end-start);}
+        start=end+1;
         col_index++;
         if(col_index>=ncol){col_index=0; row_index++; break;}
       }
@@ -65,6 +62,7 @@ Rcpp::List parse_curves(std::vector<std::string> const &lines,
   //If wrapped, there are less rows than lines so they need to be shrunk
   //Also, need to convert to correct type (assumed double unless given)
   Rcpp::List converted_curves(ncol);
+  std::string token;
   double token_val;
   std::string col_format;
   for(int ci=0; ci<ncol; ci++){

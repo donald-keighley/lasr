@@ -19,7 +19,7 @@
 // [[Rcpp::export]]
 Rcpp::List read_las_cpp(std::vector<std::string>& lines, bool header_only = false){
   // Removes comments
-  lines.erase(std::remove_if(lines.begin(), lines.end(), [](std::string& x) { return x.substr(0,1)=="#";}), lines.end());
+  lines.erase(std::remove_if(lines.begin(), lines.end(), [](std::string& x) { std::string fc = x.substr(0,1); return ((fc=="#")|(fc==""));}), lines.end());
   std::string line;
   LasMap las_map;
   std::string sect_string = "";
@@ -89,7 +89,6 @@ Rcpp::List read_las_cpp(std::vector<std::string>& lines, bool header_only = fals
     curvesets.attr("names") = curveset_names;
     las_list[2] = curvesets;
   }
-
   return(las_list);
 }
 
