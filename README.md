@@ -4,36 +4,39 @@ Donny Keighley
 1/1/2021
 
 [lasr](https://github.com/donald-keighley/lasr) is a package designed
-for reading [Log Ascii Standard (LAS)](https://www.cwls.org/products/)
-files in R and compiling the data into tables. Currently it is in the
-beta testing stages. Recently it was modified to more fully support LAS
-3.0.
+for reading and writing [Log Ascii Standard
+(LAS)](https://www.cwls.org/products/) files in R. Currently it is in
+the beta testing stages. As such, it is subject to significant ongoing
+changes and is not complete. For instance it can’t write LAS files yet…
 
 Goals
 -----
 
-lasr is primarily designed to help build large log data tables for use
-in non-standard workflows. It is optimized for speed. To accomplish
-this, most of it is written in C++ and connected to R with
-[Rcpp](http://www.rcpp.org/).
+lasr is primarily designed to import LAS files at high speed and in
+large batches. To accomplish this, most of it is written in C++ and
+connected to R with [Rcpp](http://www.rcpp.org/). It stores the data in
+lists of [data.table’s](https://rdatatable.gitlab.io/data.table/) for
+fast manipulation.
 
-Ultimately, functions to standardize the log curves for a well will be
-added including:
-
--   Aliasing
--   Depth Merging
--   Unit Standardizing
--   Matrix Identification
--   Writing LAS files
+Currently, the focus is on supporting reading [LAS
+3.0](https://www.cwls.org/wp-content/uploads/2014/09/LAS_3_File_Structure.pdf)
+as fully as possible. There will be some effort to handle non-standard
+LAS files but nothing too cute. lasr is being written to load files
+using as little information from the header as possible which should
+alleviate many common issues. Beyond that, the aim is to output helpful
+error messages so that non-standard files can be fixed. Afterall, one of
+the great things about LAS files is that they are human readable and can
+often be fixed using a simple text editor.
 
 [**lasr**](https://github.com/donald-keighley/lasr) is not designed to
 accomplish traditional petrophysical workflows and there are no plans to
-do so. Also, while efforts will be made to handle some non-standard and
-erroneous LAS files, the goal is not to handle every edge case
-perfectly. Rather, files that produce errors will produce the most
-helpful error messages possible so that bad files can be checked and
-fixed. If these are your goals, you should check out the excellent
-python packages
+do so. There’s plenty of industry software for that. lasr is intended as
+a building block to facilitate people doing new and creative things with
+large volumes of log data. It’s also intended to help build up the
+library of geoscience packages for R.
+
+For a more traditional approach, or if you’d prefer to use Python, you
+should check out the excellent packages
 [**lasio**](https://lasio.readthedocs.io/en/latest/index.html) and
 [**welly**](https://welly.readthedocs.io/en/latest/api/welly.html).
 
@@ -42,7 +45,7 @@ Installation
 
 You can install [**lasr**](https://github.com/donald-keighley/lasr) from
 github using the
-[*install\_github*](https://www.rdocumentation.org/packages/devtools/versions/1.13.6/topics/install_github)
+[`install_github`](https://www.rdocumentation.org/packages/devtools/versions/1.13.6/topics/install_github)
 function from the [devtools](https://devtools.r-lib.org/) package.
 
 ``` r
@@ -51,7 +54,7 @@ library(devtools)
 install_github('https://github.com/donald-keighley/lasr')
 ```
 
-Currently, the only function is read.las which will import a vector of
+Currently, the only function is `read.las` which will import a vector of
 LAS file paths into a multi-part list. Each section of the file is now
 stored as a separate element. In order to accomodate LAS 3.0 files which
 may have multiple log data sections, the log parameter, log definition,
@@ -147,7 +150,7 @@ time.taken = end.time - start.time
 time.taken
 ```
 
-    ## Time difference of 31.80392 secs
+    ## Time difference of 31.94677 secs
 
 Now in Python in parallel using 4 cores:
 
@@ -166,11 +169,11 @@ print('Duration: {}'.format(end_time - start_time))
 
     ## Duration: 0:04:32.132885
 
-Future work
------------
+Clearly, lasr is faster, however, please don’t take this as a shot at
+lasio. The primary goal of this package is speed, and as such countless
+hours have been put into speed testing, de-bottlenecking, and enduring
+the pain of writing in C++. As with anything, there are tradeoffs, and
+lasr errs toward speed where lasio tends more toward user convenience.
+They are simply different products.
 
-Currently, the focus is on testing with as many files as possible in
-order to find and fix bugs and add error messages. In terms of
-functionality, writing a function to export LAS files will probably be
-next. Adding additional functions to parse some of the other LAS 3.0
-sections like Core and Tops is high on the list as well.
+Good luck, and if you have any suggestions reach out!
