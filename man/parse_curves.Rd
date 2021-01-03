@@ -7,6 +7,7 @@
 parse_curves(
   lines,
   curve_names,
+  format,
   delim = " ",
   null_val = -999.25,
   first_line = 0L,
@@ -17,6 +18,8 @@ parse_curves(
 \item{lines}{A vector of strings containing log curve data}
 
 \item{curve_names}{A vector of strings containing the names of the log curves}
+
+\item{format}{A vector of strings containing the formats of the log curves}
 
 \item{delim}{A string specifying the delimiter}
 

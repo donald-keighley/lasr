@@ -6,7 +6,7 @@ Date: 2020-11-02
 Author: Donald Keighley
 Maintainer: Donald Keighley <donald.keighley@gmail.com>
 Description: This package reads and writes LAS files for well log data (not LiDAR) using Rcpp and data.table for speed.
-License: GPL-3
+License: MPL-2.0 | file LICENSE
 Imports: Rcpp
 Depends: data.table
 LinkingTo: Rcpp

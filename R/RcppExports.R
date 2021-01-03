@@ -7,6 +7,7 @@
 #' @param lines A vector of strings containing log curve data
 #' @param delim A string specifying the delimiter
 #' @param curve_names A vector of strings containing the names of the log curves
+#' @param format A vector of strings containing the formats of the log curves
 #' @param null_val A double indicating what value to replace with NA
 #' @param first_line An integer indicating the index of the first line in lines containing log data
 #' @param last_line An integer indicating the last index of lines containing log data.
