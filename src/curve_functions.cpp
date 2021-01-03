@@ -41,7 +41,17 @@ Rcpp::List parse_curves(std::vector<std::string> const &lines,
       while(end<std::string::npos){
         start=line.find_first_not_of(delim,end);
         end=line.find_first_of(delim,start);
-        if(end>start){curves[col_index][row_index] = line.substr(start,end-start);}
+        if(end>start){
+          //Handles the fact that quoted fields can contain the delimiter
+          if(line.substr(start,1)!="\""){
+            curves[col_index][row_index] = line.substr(start,end-start);
+          }else{
+            end=line.find_first_of("\"",start + 1);
+            end=line.find_first_of(delim,end);
+            curves[col_index][row_index] = line.substr(start+1,(end-1)-(start+1));
+          }
+          
+        }
         col_index++;
         if(col_index>=ncol){col_index=0; row_index++; break;}
       }
@@ -52,7 +62,16 @@ Rcpp::List parse_curves(std::vector<std::string> const &lines,
       start=0; end=0; line=lines[line_index];
       while(end<std::string::npos){
         end=line.find(delim,start);
-        if(end>start){curves[col_index][row_index]=line.substr(start,end-start);}
+        if(end>start){
+          //Handles the fact that quoted fields can contain the delimiter
+          if(line.substr(start,1)!="\""){
+            curves[col_index][row_index]=line.substr(start,end-start);
+          }else{
+            end=line.find_first_of("\"",start + 1);
+            end=line.find_first_of(delim,end);
+            curves[col_index][row_index] = line.substr(start+1,(end-1)-(start+1));
+          }
+        }
         start=end+1;
         col_index++;
         if(col_index>=ncol){col_index=0; row_index++; break;}
