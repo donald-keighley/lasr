@@ -19,6 +19,7 @@ std::string trim_ws(std::string s){
 //' @param first_line An integer indicating the index of the first line in lines containing header data.
 //' @param last_line An integer indicating the last index of lines containing header data.
 //' @return A dataframe containing the header data.
+//' @export
 // [[Rcpp::export]]
 Rcpp::DataFrame parse_header(std::vector<std::string> const &lines, int first_line = 0, int last_line = -1){
   //Sets the last line to the end of the vector if the line is not given
@@ -75,6 +76,9 @@ Rcpp::DataFrame parse_header(std::vector<std::string> const &lines, int first_li
       }
     }
   }
+  //Shrinks the output if any unparseable lines were found
+  if(n<nrow){for(std::size_t i=0; i<6; i++){header[i].resize(n);}}
+  
   Rcpp::DataFrame headerDF = Rcpp::wrap(header);
   headerDF.attr("names") = Rcpp::CharacterVector::create("MNEMONIC", "UNIT", "VALUE", "COMMENT", "FORMAT", "ASSOCIATION");
   headerDF.attr("class") = Rcpp::CharacterVector::create("data.table", "data.frame");

@@ -11,6 +11,7 @@
 //' @param first_line An integer indicating the index of the first line in lines containing log data
 //' @param last_line An integer indicating the last index of lines containing log data.
 //' @return A dataframe containing the curves
+//' @export
 // [[Rcpp::export]]
 Rcpp::List parse_curves(std::vector<std::string> const &lines,
                              Rcpp::CharacterVector const &curve_names,
@@ -27,7 +28,7 @@ Rcpp::List parse_curves(std::vector<std::string> const &lines,
   
   //Vector of string vectors to hold results.  Will convert types later.
   int ncol = curve_names.size();
-  int nrow = last_line - first_line;
+  int nrow = last_line - first_line + 1;
   std::vector<std::vector<std::string> > curves(ncol, std::vector<std::string>(nrow, ""));
   
   //Parses the curves.  Doesn't need to know if it's wrapped, will work either way.
@@ -36,7 +37,7 @@ Rcpp::List parse_curves(std::vector<std::string> const &lines,
   std::size_t start; std::size_t end; std::string line;
   //If the delimiter is a space, consecutive delimiters are treated as one:
   if(delim == " "){
-    for(int line_index = first_line; line_index<last_line; line_index++){
+    for(int line_index = first_line; line_index<=last_line; line_index++){
       start=0; end=0; line=lines[line_index];
       while(end<std::string::npos){
         start=line.find_first_not_of(delim,end);
@@ -58,7 +59,7 @@ Rcpp::List parse_curves(std::vector<std::string> const &lines,
     }
   //If the delimiter is not a space, consecutive delimiters are not treated as one:
   }else{
-    for(int line_index = first_line; line_index<last_line; line_index++){
+    for(int line_index = first_line; line_index<=last_line; line_index++){
       start=0; end=0; line=lines[line_index];
       while(end<std::string::npos){
         end=line.find(delim,start);
@@ -83,30 +84,40 @@ Rcpp::List parse_curves(std::vector<std::string> const &lines,
   //Also, need to convert to correct type (assumed double unless given)
   Rcpp::List converted_curves(ncol);
   std::string token;
-  double token_val;
+  double token_dbl;
+  int token_int;
   std::string col_format;
   for(int ci=0; ci<ncol; ci++){
     col_format = format[ci];
-    if(col_format.substr(0,1)=="S"){
+    if((col_format=="")|(col_format[0]=='F')|(col_format[1]=='F')){
+      Rcpp::NumericVector curve(row_index, NA_REAL);
+      for(int ri = 0; ri<row_index; ri++){
+        token = curves[ci][ri];
+        if(token != ""){
+          token_dbl = std::atof(token.c_str());
+          if(token_dbl!=null_val){curve[ri] = token_dbl;}
+        }
+      }
+      converted_curves[ci] = curve;
+    }else if((col_format[0]=='I')|(col_format[1]=='I')){
+      Rcpp::IntegerVector curve(row_index, NA_INTEGER);
+      for(int ri = 0; ri<row_index; ri++){
+        token = curves[ci][ri];
+        if(token != ""){
+          token_int = std::atoi(token.c_str());
+          if(token_int!=null_val){curve[ri] = token_int;}
+        }
+      }
+      converted_curves[ci] = curve;
+    }else{
       Rcpp::CharacterVector curve(row_index, NA_STRING);
       for(int ri = 0; ri<row_index; ri++){
         token = curves[ci][ri];
         if(token != ""){curve[ri] = token;}
       }
       converted_curves[ci] = curve;
-    }else{
-      Rcpp::NumericVector curve(row_index, NA_REAL);
-      for(int ri = 0; ri<row_index; ri++){
-        token = curves[ci][ri];
-        if(token != ""){
-          token_val = std::atof(token.c_str());
-          if(token_val!=null_val){curve[ri] = token_val;}
-        }
-      }
-      converted_curves[ci] = curve;
     }
   }
-  
   converted_curves.attr("names") = curve_names;
   converted_curves.attr("class") = Rcpp::CharacterVector::create("data.table", "data.frame");
   return(converted_curves);

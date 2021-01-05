@@ -1,7 +1,7 @@
 #ifndef CURVE_FUNCTIONS_H
 #define CURVE_FUNCTIONS_H
 
-Rcpp::List parse_curves(std::vector<std::string> const &lines,
+Rcpp::DataFrame parse_curves(std::vector<std::string> const &lines,
                              Rcpp::CharacterVector const &curve_names, 
                              Rcpp::CharacterVector const &format, 
                              std::string delim = " ", 

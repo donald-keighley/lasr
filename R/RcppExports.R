@@ -12,6 +12,7 @@
 #' @param first_line An integer indicating the index of the first line in lines containing log data
 #' @param last_line An integer indicating the last index of lines containing log data.
 #' @return A dataframe containing the curves
+#' @export
 parse_curves <- function(lines, curve_names, format, delim = " ", null_val = -999.25, first_line = 0L, last_line = -1L) {
     .Call('_lasr_parse_curves', PACKAGE = 'lasr', lines, curve_names, format, delim, null_val, first_line, last_line)
 }
@@ -32,6 +33,7 @@ trim_ws <- function(s) {
 #' @param first_line An integer indicating the index of the first line in lines containing header data.
 #' @param last_line An integer indicating the last index of lines containing header data.
 #' @return A dataframe containing the header data.
+#' @export
 parse_header <- function(lines, first_line = 0L, last_line = -1L) {
     .Call('_lasr_parse_header', PACKAGE = 'lasr', lines, first_line, last_line)
 }

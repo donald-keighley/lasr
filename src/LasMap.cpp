@@ -40,83 +40,73 @@ void LasMap::push_back(std::string section_string, int start_index, int end_inde
   n++;
 }
 
-//Finds the first section name that begins with a V
-int LasMap::version_index(){
-  int output = -1;
-  for(std::size_t i=0; i<name.size(); i++){
-    if(name[i].substr(0,1)=="V"){
-      output = i;
-      break;
-    }
-  }
-  return(output);
-}
-
-//Finds the first section name that begins with a W
-int LasMap::well_index(){
-  int output = -1;
-  for(std::size_t i=0; i<name.size(); i++){
-    if(name[i].substr(0,1)=="W"){
-      output = i;
-      break;
-    }
-  }
-  return(output);
-}
-
 //Finds the indices of the curvesets.
 //Starts at the last section and works backward so it can stop quickly if it's an A
-std::vector<std::vector<int> > LasMap::curveset_indices(){
-  std::vector<std::vector<int> > output;
-  //The last section in all versions must be a log data section.
-  //In the vast majority of cases this will be an A with an associated P and C section.
-  if(name.back().substr(0,1)=="A"){
-    int parameter_index = -1;
-    int curve_index = -1;
-    //Gets the last section that starts with P, but stops if it finds PARAM
+std::vector<std::vector<int> > LasMap::section_indices(std::string section){
+  std::vector<std::vector<int> > indices;
+  
+  //If section is version or well, get the first section starting with V or W
+  if((section == "VERSION") | (section == "WELL")){
+    indices.push_back({-1, -1, -1});
     for(std::size_t i=0; i<name.size(); i++){
-      if(name[i].substr(0,1) == "P"){
-        parameter_index = i;
-        if(name[i].substr(0,5) == "PARAM"){break;}
-      }
-    }
-    //Gets the last section that starts with C, but stops if it finds CURVE
-    for(std::size_t i=0; i<name.size(); i++){
-      if(name[i].substr(0,1) == "C"){
-        curve_index = i;
-        if(name[i].substr(0,5) == "CURVE"){break;}
-      }
-    }
-    int ascii_index = name.size()-1;
-    output.push_back({parameter_index, curve_index, ascii_index});
-  }else{
-    //In this case it's LAS 3.0 and can have multiple log data sections
-    //This will loop through in reverse to get the log sections and their associates
-    for(std::size_t i=name.size()-1; i>=0; i--){
-      if(name[i].substr(0,8)=="LOG_DATA"){
-        int log_parameter_index = -1;
-        int log_definition_index = -1;
-        std::string log_definition_name = association[i];
-        std::string n_suffix = "";
-        if(number[i]!=0){n_suffix = "[" + std::to_string(number[i]) + "]";}
-        if(log_definition_name == ""){log_definition_name = "LOG_DEFINITION" + n_suffix;}
-        std::string log_parameter_name = "LOG_PARAMETER" + n_suffix;
-        for(std::size_t i=0; i<name.size(); i++){
-          if(name[i]==log_definition_name){
-            log_definition_index = i;
-          }else if(name[i]==log_parameter_name){
-            log_parameter_index = i;
-          }
-        }
-        int log_data_index = name.size()-1;
-        output.push_back({log_parameter_index, log_definition_index, log_data_index});
-      }else{
+      if(name[i].substr(0,1) == section.substr(0,1)){
+        indices[0][0] = i;
         break;
       }
     }
+  }else{
+    if(section == "LOG"){
+      //The last section in all versions must be a log data section.
+      //If in most cases it's an A with an associated P and C section.
+      if(name.back().substr(0,1)=="A"){
+        int parameter_index = -1;
+        int curve_index = -1;
+        //Gets the last section that starts with P, but stops if it finds PARAM
+        for(std::size_t i=0; i<name.size(); i++){
+          if(name[i].substr(0,1) == "P"){
+            parameter_index = i;
+            if(name[i].substr(0,5) == "PARAM"){break;}
+          }
+        }
+        //Gets the last section that starts with C, but stops if it finds CURVE
+        for(std::size_t i=0; i<name.size(); i++){
+          if(name[i].substr(0,1) == "C"){
+            curve_index = i;
+            if(name[i].substr(0,5) == "CURVE"){break;}
+          }
+        }
+        int ascii_index = name.size()-1;
+        indices.push_back({parameter_index, curve_index, ascii_index});
+      }
+    }
+    if(((section=="LOG") && (indices.size()==0))||(section!="LOG")){
+      //In this case it's LAS 3.0 and you have to search for multiple data sections
+      for(std::size_t i=0; i<name.size(); i++){
+        if(name[i].rfind(section + "_DATA", 0) == 0){
+          int log_parameter_index = -1;
+          int log_definition_index = -1;
+          std::string log_definition_name = association[i];
+          std::string n_suffix = "";
+          if(number[i]!=0){n_suffix = "[" + std::to_string(number[i]) + "]";}
+          if(log_definition_name == ""){log_definition_name = section + "_DEFINITION" + n_suffix;}
+          std::string log_parameter_name = section + "_PARAMETER" + n_suffix;
+          for(std::size_t i=0; i<name.size(); i++){
+            if(name[i]==log_definition_name){
+              log_definition_index = i;
+            }else if(name[i]==log_parameter_name){
+              log_parameter_index = i;
+            }
+          }
+          int log_data_index = i;
+          indices.push_back({log_parameter_index, log_definition_index, log_data_index});
+        }
+      }
+    }
   }
-  return(output);
+  return(indices);
 }
+
+
 
 //This method is basically just for troubleshooting
 Rcpp::DataFrame LasMap::dataframe(){
