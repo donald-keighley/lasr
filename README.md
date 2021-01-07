@@ -70,10 +70,10 @@ library(lasr)
 las = read.las(system.file("extdata", "las_3_cwls.las", package = "lasr"))
 
 #Display the WELL section
-head(las$WELL, 10)
+head(las$well, 10)
 ```
 
-    ##     MNEMONIC UNIT                    VALUE           COMMENT     FORMAT
+    ##     mnemonic unit                    value           comment     format
     ##  1:     STRT    M                1660.1250 First Index Value           
     ##  2:     STOP    M                1660.8750  Last Index Value           
     ##  3:     STEP    M                   0.1250              STEP           
@@ -84,7 +84,7 @@ head(las$WELL, 10)
     ##  8:      LOC                    1-2-3-4W5M          LOCATION           
     ##  9:     SRVC      ANY LOGGING COMPANY INC.   SERVICE COMPANY           
     ## 10:     DATE                    13/12/1986      Service DATE DD/MM/YYYY
-    ##     ASSOCIATION
+    ##     association
     ##  1:            
     ##  2:            
     ##  3:            
@@ -98,10 +98,25 @@ head(las$WELL, 10)
 
 ``` r
 #Display the log curves
-head(las$CURVESETS$CURVESET_1$LOG_DATA, 10)
+head(las$log$log.1$data, 10)
 ```
 
-    ## NULL
+    ##        DEPT     DT DPHI NPHI      YME                     CDES NMR[1] NMR[2]
+    ## 1: 1660.125 123.45 0.11 0.37 1.45E+12          DOLOMITE W/VUGS     10     12
+    ## 2: 1660.250 123.45 0.12 0.36 1.47E+12                LIMESTONE     12     15
+    ## 3: 1660.375 123.45 0.13 0.35 2.85E+12            LOST INTERVAL     18     25
+    ## 4: 1660.500 123.45 0.14 0.34 2.85E+12            LOST INTERVAL     18     25
+    ## 5: 1660.625 123.45 0.15 0.33 2.85E+12            LOST INTERVAL     18     25
+    ## 6: 1660.750 123.45 0.16 0.32 2.85E+12 SANDSTONE, SHALE STREAKS     18     25
+    ## 7: 1660.875 123.45 0.17 0.31 2.85E+12            LOST INTERVAL     18     25
+    ##    NMR[3] NMR[4] NMR[5]
+    ## 1:     14     18     13
+    ## 2:     21     35     25
+    ## 3:     10      8     17
+    ## 4:     10      8     17
+    ## 5:     10      8     17
+    ## 6:     10      8     17
+    ## 7:     10      8     17
 
 Speed Test
 ----------
@@ -129,7 +144,7 @@ time.taken = end.time - start.time
 time.taken
 ```
 
-    ## Time difference of 25.19613 secs
+    ## Time difference of 19.43144 secs
 
 Now in Python in parallel using 4 cores:
 

@@ -36,10 +36,10 @@ library(lasr)
 las = read.las(system.file("extdata", "las_3_cwls.las", package = "lasr"))
 
 #Display the WELL section
-head(las$WELL, 10)
+head(las$well, 10)
 
 #Display the log curves
-head(las$CURVESETS$CURVESET_1$LOG_DATA, 10)
+head(las$log$log.1$data, 10)
 ```
 
 ## Speed Test
