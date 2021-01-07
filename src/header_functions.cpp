@@ -19,7 +19,6 @@ std::string trim_ws(std::string s){
 //' @param first_line An integer indicating the index of the first line in lines containing header data.
 //' @param last_line An integer indicating the last index of lines containing header data.
 //' @return A dataframe containing the header data.
-//' @export
 // [[Rcpp::export]]
 Rcpp::DataFrame parse_header(std::vector<std::string> const &lines, int first_line = 0, int last_line = -1){
   //Sets the last line to the end of the vector if the line is not given
@@ -80,7 +79,7 @@ Rcpp::DataFrame parse_header(std::vector<std::string> const &lines, int first_li
   if(n<nrow){for(std::size_t i=0; i<6; i++){header[i].resize(n);}}
   
   Rcpp::DataFrame headerDF = Rcpp::wrap(header);
-  headerDF.attr("names") = Rcpp::CharacterVector::create("MNEMONIC", "UNIT", "VALUE", "COMMENT", "FORMAT", "ASSOCIATION");
+  headerDF.attr("names") = Rcpp::CharacterVector::create("mnemonic", "unit", "value", "comment", "format", "association");
   headerDF.attr("class") = Rcpp::CharacterVector::create("data.table", "data.frame");
   return(headerDF);
 }
@@ -95,8 +94,8 @@ Rcpp::DataFrame parse_header(std::vector<std::string> const &lines, int first_li
 //' @export
 // [[Rcpp::export]]
 double get_header_double(Rcpp::DataFrame &header, std::string mnem, double default_val){
-  Rcpp::CharacterVector mnem_col = header["MNEMONIC"];
-  Rcpp::CharacterVector val_col = header["VALUE"];
+  Rcpp::CharacterVector mnem_col = header["mnemonic"];
+  Rcpp::CharacterVector val_col = header["value"];
   int n = mnem_col.size();
   std::string val_str;
   for(int i=0; i<n; i++){
@@ -120,8 +119,8 @@ double get_header_double(Rcpp::DataFrame &header, std::string mnem, double defau
 //' @export
 // [[Rcpp::export]]
 int get_header_int(Rcpp::DataFrame &header, std::string mnem, int default_val){
-  Rcpp::CharacterVector mnem_col = header["MNEMONIC"];
-  Rcpp::CharacterVector val_col = header["VALUE"];
+  Rcpp::CharacterVector mnem_col = header["mnemonic"];
+  Rcpp::CharacterVector val_col = header["value"];
   int n = mnem_col.size();
   std::string val_str;
   for(int i=0; i<n; i++){
@@ -144,8 +143,8 @@ int get_header_int(Rcpp::DataFrame &header, std::string mnem, int default_val){
 //' @export
 // [[Rcpp::export]]
 std::string get_header_string(Rcpp::DataFrame &header, std::string mnem){
-  Rcpp::CharacterVector mnem_col = header["MNEMONIC"];
-  Rcpp::CharacterVector val_col = header["VALUE"];
+  Rcpp::CharacterVector mnem_col = header["mnemonic"];
+  Rcpp::CharacterVector val_col = header["value"];
   int n = mnem_col.size();
   std::string val;
   for(int i=0; i<n; i++){

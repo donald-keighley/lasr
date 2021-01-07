@@ -67,23 +67,23 @@ package:
 
 ``` r
 library(lasr)
-las = read.las(system.file("extdata", "Jonah_Federal_20-5.las", package = "lasr"))
+las = read.las(system.file("extdata", "las_3_cwls.las", package = "lasr"))
 
 #Display the WELL section
 head(las$WELL, 10)
 ```
 
-    ##     MNEMONIC UNIT                            VALUE     COMMENT FORMAT
-    ##  1:     STRT    F                          12063.0 START DEPTH       
-    ##  2:     STOP    F                           6915.0  STOP DEPTH       
-    ##  3:     STEP    F                             -0.5        STEP       
-    ##  4:     NULL                               -999.25  NULL VALUE       
-    ##  5:     COMP           Encana Oil & Gas (USA) Inc.     COMPANY       
-    ##  6:     WELL                    Jonah Federal 20-5        WELL       
-    ##  7:      FLD                                 Jonah       FIELD       
-    ##  8:      LOC      SHL: Lot-6, 690' FNL & 2203' FEL    LOCATION       
-    ##  9:     CNTY                              Sublette      COUNTY       
-    ## 10:     STAT                               Wyoming       STATE       
+    ##     MNEMONIC UNIT                    VALUE           COMMENT     FORMAT
+    ##  1:     STRT    M                1660.1250 First Index Value           
+    ##  2:     STOP    M                1660.8750  Last Index Value           
+    ##  3:     STEP    M                   0.1250              STEP           
+    ##  4:     NULL                       -999.25        NULL VALUE           
+    ##  5:     COMP          ANY OIL COMPANY INC.           COMPANY           
+    ##  6:     WELL         ANY ET AL 01-02-03-04              WELL           
+    ##  7:      FLD                       WILDCAT             FIELD           
+    ##  8:      LOC                    1-2-3-4W5M          LOCATION           
+    ##  9:     SRVC      ANY LOGGING COMPANY INC.   SERVICE COMPANY           
+    ## 10:     DATE                    13/12/1986      Service DATE DD/MM/YYYY
     ##     ASSOCIATION
     ##  1:            
     ##  2:            
@@ -101,28 +101,7 @@ head(las$WELL, 10)
 head(las$CURVESETS$CURVESET_1$LOG_DATA, 10)
 ```
 
-    ##        DEPT CIRN_FIL CIRF_FIL INND_FIL INFD_FIL   IRAT IRAT_FIL    SIGM
-    ##  1: 12063.0       NA       NA       NA       NA     NA       NA      NA
-    ##  2: 12062.5       NA       NA       NA       NA     NA       NA      NA
-    ##  3: 12062.0       NA       NA       NA       NA     NA       NA      NA
-    ##  4: 12061.5       NA       NA       NA       NA     NA       NA      NA
-    ##  5: 12061.0       NA       NA       NA       NA     NA       NA      NA
-    ##  6: 12060.5       NA       NA       NA       NA     NA       NA      NA
-    ##  7: 12060.0   0.7474   2.2926 7129.522 3422.008 0.4800   0.4800 13.2762
-    ##  8: 12059.5   0.7474   2.2926 7129.522 3422.008 0.4800   0.4800 13.2762
-    ##  9: 12059.0   0.7487   2.3673 7176.949 3398.079 0.4726   0.4735 12.1268
-    ## 10: 12058.5   0.7630   2.4401 7216.565 3402.010 0.4679   0.4714 11.6480
-    ##     TSCN_FIL TSCF_FIL   TRAT TRAT_FIL   TPHI      GR     WTEP    CBL CCLD
-    ##  1:       NA       NA     NA       NA     NA 25.8075 231.6347 2.2320    0
-    ##  2:       NA       NA     NA       NA     NA 25.8075 231.6347 2.4066    0
-    ##  3:       NA       NA     NA       NA     NA 25.8075 231.6347 2.5372    0
-    ##  4:       NA       NA     NA       NA     NA 25.8075 231.6347 2.6092    0
-    ##  5:       NA       NA     NA       NA     NA 25.8075 231.6347 2.6032    0
-    ##  6:       NA       NA     NA       NA     NA 25.8075 231.6347 2.8285    0
-    ##  7: 5328.310 7845.378 0.6792   0.6792 0.0674 25.8075 231.6347 3.0249    0
-    ##  8: 5328.310 7845.378 0.6792   0.6792 0.0674 25.8075 231.6347 3.1866    0
-    ##  9: 5381.087 8110.229 0.6524   0.6637 0.0610 25.8075 231.6347 3.2347    0
-    ## 10: 5409.057 8309.733 0.6596   0.6510 0.0548 25.8075 231.6347 3.2273    0
+    ## NULL
 
 Speed Test
 ----------
@@ -150,7 +129,7 @@ time.taken = end.time - start.time
 time.taken
 ```
 
-    ## Time difference of 31.94677 secs
+    ## Time difference of 25.19613 secs
 
 Now in Python in parallel using 4 cores:
 

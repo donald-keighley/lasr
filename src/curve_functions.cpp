@@ -11,17 +11,19 @@
 //' @param first_line An integer indicating the index of the first line in lines containing log data
 //' @param last_line An integer indicating the last index of lines containing log data.
 //' @return A dataframe containing the curves
-//' @export
 // [[Rcpp::export]]
 Rcpp::List parse_curves(std::vector<std::string> const &lines,
                              Rcpp::CharacterVector const &curve_names,
                              Rcpp::CharacterVector const &format,
                              std::string delim = " ",
-                             double null_val = -999.25,
+                             std::string null_str = "-999.25",
                              int first_line = 0, 
                              int last_line = -1){
   //Sets the last line to the end of the vector if the line is not given
   if(last_line<0){last_line = lines.size();}
+  
+  //Gets the null value
+  double null_val = std::atof(null_str.c_str());
   
   //Handles some special cases of the delimiters
   if(delim == "COMMA"){delim = ",";}else if(delim == "TAB"){delim = "\t";}else{delim = " ";}
@@ -49,7 +51,7 @@ Rcpp::List parse_curves(std::vector<std::string> const &lines,
           }else{
             end=line.find_first_of("\"",start + 1);
             end=line.find_first_of(delim,end);
-            curves[col_index][row_index] = line.substr(start+1,(end-1)-(start+1));
+            curves[col_index][row_index] = line.substr(start+1,(std::min(end,line.size())-1)-(start+1));
           }
           
         }
@@ -70,7 +72,7 @@ Rcpp::List parse_curves(std::vector<std::string> const &lines,
           }else{
             end=line.find_first_of("\"",start + 1);
             end=line.find_first_of(delim,end);
-            curves[col_index][row_index] = line.substr(start+1,(end-1)-(start+1));
+            curves[col_index][row_index] = line.substr(start+1,(std::min(end,line.size())-1)-(start+1));
           }
         }
         start=end+1;
@@ -88,6 +90,7 @@ Rcpp::List parse_curves(std::vector<std::string> const &lines,
   int token_int;
   std::string col_format;
   for(int ci=0; ci<ncol; ci++){
+    //Most data are float, so it's first in the if statement
     col_format = format[ci];
     if((col_format=="")|(col_format[0]=='F')|(col_format[1]=='F')){
       Rcpp::NumericVector curve(row_index, NA_REAL);
@@ -110,10 +113,11 @@ Rcpp::List parse_curves(std::vector<std::string> const &lines,
       }
       converted_curves[ci] = curve;
     }else{
+      //Default is left as a string in case there's any issues
       Rcpp::CharacterVector curve(row_index, NA_STRING);
       for(int ri = 0; ri<row_index; ri++){
         token = curves[ci][ri];
-        if(token != ""){curve[ri] = token;}
+        if((token != "") & (token!=null_str)){curve[ri] = token;}
       }
       converted_curves[ci] = curve;
     }

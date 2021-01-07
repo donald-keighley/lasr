@@ -33,7 +33,7 @@ Here is an example reading a single LAS file that is included with the package:
 
 ```{r readlas, eval=TRUE, message=FALSE}
 library(lasr)
-las = read.las(system.file("extdata", "Jonah_Federal_20-5.las", package = "lasr"))
+las = read.las(system.file("extdata", "las_3_cwls.las", package = "lasr"))
 
 #Display the WELL section
 head(las$WELL, 10)

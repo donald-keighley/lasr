@@ -6,8 +6,8 @@
 using namespace Rcpp;
 
 // parse_curves
-Rcpp::List parse_curves(std::vector<std::string> const& lines, Rcpp::CharacterVector const& curve_names, Rcpp::CharacterVector const& format, std::string delim, double null_val, int first_line, int last_line);
-RcppExport SEXP _lasr_parse_curves(SEXP linesSEXP, SEXP curve_namesSEXP, SEXP formatSEXP, SEXP delimSEXP, SEXP null_valSEXP, SEXP first_lineSEXP, SEXP last_lineSEXP) {
+Rcpp::List parse_curves(std::vector<std::string> const& lines, Rcpp::CharacterVector const& curve_names, Rcpp::CharacterVector const& format, std::string delim, std::string null_str, int first_line, int last_line);
+RcppExport SEXP _lasr_parse_curves(SEXP linesSEXP, SEXP curve_namesSEXP, SEXP formatSEXP, SEXP delimSEXP, SEXP null_strSEXP, SEXP first_lineSEXP, SEXP last_lineSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -15,10 +15,10 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::CharacterVector const& >::type curve_names(curve_namesSEXP);
     Rcpp::traits::input_parameter< Rcpp::CharacterVector const& >::type format(formatSEXP);
     Rcpp::traits::input_parameter< std::string >::type delim(delimSEXP);
-    Rcpp::traits::input_parameter< double >::type null_val(null_valSEXP);
+    Rcpp::traits::input_parameter< std::string >::type null_str(null_strSEXP);
     Rcpp::traits::input_parameter< int >::type first_line(first_lineSEXP);
     Rcpp::traits::input_parameter< int >::type last_line(last_lineSEXP);
-    rcpp_result_gen = Rcpp::wrap(parse_curves(lines, curve_names, format, delim, null_val, first_line, last_line));
+    rcpp_result_gen = Rcpp::wrap(parse_curves(lines, curve_names, format, delim, null_str, first_line, last_line));
     return rcpp_result_gen;
 END_RCPP
 }
