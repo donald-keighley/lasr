@@ -8,11 +8,10 @@
 #' @param delim A string specifying the delimiter
 #' @param curve_names A vector of strings containing the names of the log curves
 #' @param format A vector of strings containing the formats of the log curves
-#' @param null_val A double indicating what value to replace with NA
+#' @param null_str A string indicating what value to replace with NA
 #' @param first_line An integer indicating the index of the first line in lines containing log data
 #' @param last_line An integer indicating the last index of lines containing log data.
 #' @return A dataframe containing the curves
-#' @export
 parse_curves <- function(lines, curve_names, format, delim = " ", null_str = "-999.25", first_line = 0L, last_line = -1L) {
     .Call('_lasr_parse_curves', PACKAGE = 'lasr', lines, curve_names, format, delim, null_str, first_line, last_line)
 }
@@ -33,7 +32,6 @@ trim_ws <- function(s) {
 #' @param first_line An integer indicating the index of the first line in lines containing header data.
 #' @param last_line An integer indicating the last index of lines containing header data.
 #' @return A dataframe containing the header data.
-#' @export
 parse_header <- function(lines, first_line = 0L, last_line = -1L) {
     .Call('_lasr_parse_header', PACKAGE = 'lasr', lines, first_line, last_line)
 }

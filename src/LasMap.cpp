@@ -106,7 +106,23 @@ std::vector<std::vector<int> > LasMap::section_indices(std::string section){
   return(indices);
 }
 
-
+//Gets the user defined section names
+std::vector<std::string> LasMap::get_user_sections(){
+  std::string suffix = "_DATA";
+  std::string name_val;
+  std::vector<std::string> sections;
+  for(std::size_t i=0; i<name.size(); i++){
+    name_val = name[i];
+    std::size_t j = name_val.find(suffix);
+    if(j<std::string::npos){
+      name_val.erase(j, name_val.length());
+      if((name_val!="LOG")&(name_val!="CORE")&(name_val!="INCLINOMETRY")&(name_val!="DRILLING")&(name_val!="TOPS")&(name_val!="TEST")){
+        sections.push_back(name_val);
+      }
+    }
+  }
+  return(sections);
+}
 
 //This method is basically just for troubleshooting
 Rcpp::DataFrame LasMap::dataframe(){

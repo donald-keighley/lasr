@@ -9,7 +9,7 @@ parse_curves(
   curve_names,
   format,
   delim = " ",
-  null_val = -999.25,
+  null_str = "-999.25",
   first_line = 0L,
   last_line = -1L
 )
@@ -23,7 +23,7 @@ parse_curves(
 
 \item{delim}{A string specifying the delimiter}
 
-\item{null_val}{A double indicating what value to replace with NA}
+\item{null_str}{A string indicating what value to replace with NA}
 
 \item{first_line}{An integer indicating the index of the first line in lines containing log data}
 

@@ -25,6 +25,7 @@ public:
   std::vector<int> get_start(){return(start);}
   std::vector<int> get_end(){return(end);}
   std::vector<std::vector<int> > section_indices(std::string section);
+  std::vector<std::string> get_user_sections();
   void push_back(std::string section_string, int start_index, int end_index);
   Rcpp::DataFrame dataframe();
 };

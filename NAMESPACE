@@ -3,8 +3,6 @@
 export(get_header_double)
 export(get_header_int)
 export(get_header_string)
-export(parse_curves)
-export(parse_header)
 export(read.las)
 import(data.table)
 import(parallel)

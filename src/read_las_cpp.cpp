@@ -78,8 +78,8 @@ Rcpp::List read_las_cpp(std::vector<std::string>& lines, bool header_only = fals
   int well_index = las_map.section_indices("WELL")[0][0];
 
   //Creates the outputs
-  Rcpp::List las_list(8);
-  las_list.attr("names") = Rcpp::CharacterVector({"version","well","log","core","inclinometry","drilling","tops","test"});
+  Rcpp::List las_list(9);
+  las_list.attr("names") = Rcpp::CharacterVector({"version","well","log","core","inclinometry","drilling","tops","test","user"});
   Rcpp::DataFrame df_temp;
 
   //Gets the version section
@@ -130,6 +130,20 @@ Rcpp::List read_las_cpp(std::vector<std::string>& lines, bool header_only = fals
   indices = las_map.section_indices("TEST");
   if(indices.size()>0){las_list[7] = get_datasets(lines, indices,
      "test", las_map, delim, null_str, header_only);}
+  
+  //Gets the user strings
+  std::vector<std::string> user_sections = las_map.get_user_sections();
+  if(user_sections.size()>0){
+    Rcpp::List sectionList;
+    for(std::size_t i; i<user_sections.size(); i++){
+      indices = las_map.section_indices(user_sections[i]);
+      if(indices.size()>0){
+        sectionList.push_back(get_datasets(lines, indices,user_sections[i], las_map, delim, null_str, header_only));
+      }
+    }
+    sectionList.attr("names") = user_sections;
+    las_list[8] = sectionList;
+  }
 
   return(las_list);
 }
