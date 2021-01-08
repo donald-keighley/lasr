@@ -4,12 +4,14 @@
 \alias{read_las_cpp}
 \title{read_las_cpp}
 \usage{
-read_las_cpp(lines, header_only = FALSE)
+read_las_cpp(lines, header_only = FALSE, logs_only = TRUE)
 }
 \arguments{
 \item{lines}{A vector of lines with blank lines and leading whitespace removed}
 
 \item{header_only}{If true, will only return the header portions.}
+
+\item{logs_only}{If true, will only return up to the log section.}
 }
 \value{
 A two part list

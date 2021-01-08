@@ -5,8 +5,9 @@
 #' @keywords internal
 #' @param path The path to the LAS file
 #' @param header_only TRUE or FALSE depending on whether you want to return only header data.
+#' @param logs_only TRUE if you want to only return up to the header section.
 #' @return A two part list containing the LAS file and the header
-read.las.helper = function(path, header_only=FALSE){
+read.las.helper = function(path, header_only=FALSE, logs_only=TRUE){
   
   #Assumes the file is bad unless it proves not to be
   bad_las=TRUE
@@ -20,7 +21,7 @@ read.las.helper = function(path, header_only=FALSE){
       lines = fread(path, sep=NULL, header=FALSE, col.names = "line", 
                     strip.white=TRUE, blank.lines.skip = TRUE, 
                     showProgress = FALSE, colClasses = "character")$line
-      las = read_las_cpp(lines, header_only)
+      las = read_las_cpp(lines, header_only, logs_only)
       bad_las = FALSE
     }, error = function(e){
       return(warning(paste0(path, ': ', e$message)))
@@ -44,24 +45,25 @@ read.las.helper = function(path, header_only=FALSE){
 #' threads and paths is greater than one it will run in parallel.  Default is one.
 #' @param header_only TRUE or FALSE depending on whether you want to return only header data. 
 #' If you only want headers, this will run faster.
+#' @param logs_only TRUE (default) if you only want to return up to the log section.
 #' @return A list containing a Version, Well, and Curveset sections.
 #' @examples
 #' las = read.las(system.file("extdata", "Jonah_Federal_20-5.las", package = "lasr"))
-read.las = function(paths, nthreads=1, header_only=FALSE){
+read.las = function(paths, nthreads=1, header_only=FALSE, logs_only=TRUE){
   if(length(paths)>1){
     if(nthreads > 1){
       cores = min(detectCores(logical=TRUE), nthreads)
       cl = makeCluster(cores)
       clusterEvalQ(cl, {library(lasr)})
       clusterExport(cl, c("files", "read.las.helper"), envir=environment())
-      las = parLapply(cl, paths, read.las.helper, header_only = header_only)
+      las = parLapply(cl, paths, read.las.helper, header_only = header_only, logs_only = logs_only)
       stopCluster(cl)
     }else{
-      las = lapply(paths, read.las.helper, header_only = header_only)
+      las = lapply(paths, read.las.helper, header_only = header_only, logs_only = logs_only)
     }
     names(las) = paths
   }else{
-    las = read.las.helper(paths[1], header_only = header_only)
+    las = read.las.helper(paths[1], header_only = header_only, logs_only = logs_only)
   }
   
   return(las)

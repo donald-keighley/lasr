@@ -144,7 +144,7 @@ time.taken = end.time - start.time
 time.taken
 ```
 
-    ## Time difference of 19.43144 secs
+    ## Time difference of 29.35815 secs
 
 Now in Python in parallel using 4 cores:
 

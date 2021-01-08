@@ -52,9 +52,10 @@ Rcpp::List get_datasets(const std::vector<std::string> &lines,
 //' @description A function to read LAS files.  Not really meant to be called by the user.
 //' @param lines A vector of lines with blank lines and leading whitespace removed
 //' @param header_only If true, will only return the header portions.
+//' @param logs_only If true, will only return up to the log section.
 //' @return A two part list
 // [[Rcpp::export]]
-Rcpp::List read_las_cpp(std::vector<std::string>& lines, bool header_only = false){
+Rcpp::List read_las_cpp(std::vector<std::string>& lines, bool header_only = false, bool logs_only = true){
   // Removes comments
   lines.erase(std::remove_if(lines.begin(), lines.end(), [](std::string& x) { std::string fc = x.substr(0,1); return ((fc=="#")|(fc==""));}), lines.end());
   std::string line;
@@ -78,8 +79,13 @@ Rcpp::List read_las_cpp(std::vector<std::string>& lines, bool header_only = fals
   int well_index = las_map.section_indices("WELL")[0][0];
 
   //Creates the outputs
-  Rcpp::List las_list(9);
-  las_list.attr("names") = Rcpp::CharacterVector({"version","well","log","core","inclinometry","drilling","tops","test","user"});
+  Rcpp::List las_list(3);
+  las_list.attr("names") = Rcpp::CharacterVector({"version","well","log"});
+  if(!logs_only){
+    Rcpp::List las_list_extra(9);
+    las_list_extra.attr("names") = Rcpp::CharacterVector({"version","well","log","core","inclinometry","drilling","tops","test","user"});
+    las_list = las_list_extra;
+  }
   Rcpp::DataFrame df_temp;
 
   //Gets the version section
@@ -106,45 +112,48 @@ Rcpp::List read_las_cpp(std::vector<std::string>& lines, bool header_only = fals
   if(indices.size()>0){las_list[2] = get_datasets(lines, indices, 
      "log", las_map, delim, null_str, header_only);}
   
-  //Gets the core data section
-  indices = las_map.section_indices("CORE");
-  if(indices.size()>0){las_list[3] = get_datasets(lines, indices,
-     "core", las_map, delim, null_str, header_only);}
-  
-  //Gets the inclination data section
-  indices = las_map.section_indices("INCLINOMETRY");
-  if(indices.size()>0){las_list[4] = get_datasets(lines, indices,
-     "inclinometry", las_map, delim, null_str, header_only);}
-  
-  //Gets the drilling data section
-  indices = las_map.section_indices("DRILLING");
-  if(indices.size()>0){las_list[5] = get_datasets(lines, indices,
-     "drilling", las_map, delim, null_str, header_only);}
-  
-  //Gets the tops data section
-  indices = las_map.section_indices("TOPS");
-  if(indices.size()>0){las_list[6] = get_datasets(lines, indices,
-     "tops", las_map, delim, null_str, header_only);}
-  
-  //Gets the test data section
-  indices = las_map.section_indices("TEST");
-  if(indices.size()>0){las_list[7] = get_datasets(lines, indices,
-     "test", las_map, delim, null_str, header_only);}
-  
-  //Gets the user strings
-  std::vector<std::string> user_sections = las_map.get_user_sections();
-  if(user_sections.size()>0){
-    Rcpp::List sectionList;
-    for(std::size_t i; i<user_sections.size(); i++){
-      indices = las_map.section_indices(user_sections[i]);
-      if(indices.size()>0){
-        sectionList.push_back(get_datasets(lines, indices,user_sections[i], las_map, delim, null_str, header_only));
+  //Gets additional data sections if required
+  if(!logs_only){
+    
+    //Gets the core data section
+    indices = las_map.section_indices("CORE");
+    if(indices.size()>0){las_list[3] = get_datasets(lines, indices,
+       "core", las_map, delim, null_str, header_only);}
+    
+    //Gets the inclination data section
+    indices = las_map.section_indices("INCLINOMETRY");
+    if(indices.size()>0){las_list[4] = get_datasets(lines, indices,
+       "inclinometry", las_map, delim, null_str, header_only);}
+    
+    //Gets the drilling data section
+    indices = las_map.section_indices("DRILLING");
+    if(indices.size()>0){las_list[5] = get_datasets(lines, indices,
+       "drilling", las_map, delim, null_str, header_only);}
+    
+    //Gets the tops data section
+    indices = las_map.section_indices("TOPS");
+    if(indices.size()>0){las_list[6] = get_datasets(lines, indices,
+       "tops", las_map, delim, null_str, header_only);}
+    
+    //Gets the test data section
+    indices = las_map.section_indices("TEST");
+    if(indices.size()>0){las_list[7] = get_datasets(lines, indices,
+       "test", las_map, delim, null_str, header_only);}
+    
+    //Gets the user strings
+    std::vector<std::string> user_sections = las_map.get_user_sections();
+    if(user_sections.size()>0){
+      Rcpp::List sectionList;
+      for(std::size_t i; i<user_sections.size(); i++){
+        indices = las_map.section_indices(user_sections[i]);
+        if(indices.size()>0){
+          sectionList.push_back(get_datasets(lines, indices,user_sections[i], las_map, delim, null_str, header_only));
+        }
       }
+      sectionList.attr("names") = user_sections;
+      las_list[8] = sectionList;
     }
-    sectionList.attr("names") = user_sections;
-    las_list[8] = sectionList;
   }
-
   return(las_list);
 }
 

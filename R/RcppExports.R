@@ -78,8 +78,9 @@ get_header_string <- function(header, mnem) {
 #' @description A function to read LAS files.  Not really meant to be called by the user.
 #' @param lines A vector of lines with blank lines and leading whitespace removed
 #' @param header_only If true, will only return the header portions.
+#' @param logs_only If true, will only return up to the log section.
 #' @return A two part list
-read_las_cpp <- function(lines, header_only = FALSE) {
-    .Call('_lasr_read_las_cpp', PACKAGE = 'lasr', lines, header_only)
+read_las_cpp <- function(lines, header_only = FALSE, logs_only = TRUE) {
+    .Call('_lasr_read_las_cpp', PACKAGE = 'lasr', lines, header_only, logs_only)
 }
 
