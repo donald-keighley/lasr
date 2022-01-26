@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // parse_curves
 Rcpp::List parse_curves(std::vector<std::string> const& lines, Rcpp::CharacterVector const& curve_names, Rcpp::CharacterVector const& format, std::string delim, std::string null_str, int first_line, int last_line);
 RcppExport SEXP _lasr_parse_curves(SEXP linesSEXP, SEXP curve_namesSEXP, SEXP formatSEXP, SEXP delimSEXP, SEXP null_strSEXP, SEXP first_lineSEXP, SEXP last_lineSEXP) {
