@@ -15,6 +15,8 @@ read.las.helper = function(path, header_only=FALSE, logs_only=TRUE){
     warning(paste0(path, ': File path is not valid'))
   }else if(!file.exists(path)){
     warning(paste0(path, ':File does not exist'))
+  }else if(file.size(path)==0){
+    warning(paste0(path, ': File is empty'))
   }else{
     #Reads in the data as lines using fread for speed
     tryCatch({

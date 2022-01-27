@@ -20,7 +20,7 @@ Rcpp::List parse_curves(std::vector<std::string> const &lines,
                              int first_line = 0, 
                              int last_line = -1){
   //Sets the last line to the end of the vector if the line is not given
-  if(last_line<0){last_line = lines.size();}
+  if(last_line<0){last_line = lines.size()-1;}
   
   //Gets the null value
   double null_val = std::atof(null_str.c_str());

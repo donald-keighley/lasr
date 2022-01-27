@@ -14,6 +14,7 @@ Rcpp::List get_datasets(const std::vector<std::string> &lines,
                         LasMap &las_map, 
                         const std::string delim, const std::string null_str, 
                         const bool header_only){
+
   int num_datasets = indices.size();
   std::vector<std::string> dataset_names(num_datasets);
   Rcpp::List datasets(num_datasets);
@@ -33,7 +34,7 @@ Rcpp::List get_datasets(const std::vector<std::string> &lines,
         int data_index = indices[i][2];
         if((!header_only) & (data_index>0)){
           dataset[2] = parse_curves(lines, df_temp["mnemonic"],  df_temp["format"],
-                                    delim, null_str, las_map.start_index(data_index), 
+                                    delim, null_str, las_map.start_index(data_index),
                                     las_map.end_index(data_index));
         }
       }
@@ -56,8 +57,10 @@ Rcpp::List get_datasets(const std::vector<std::string> &lines,
 //' @return A two part list
 // [[Rcpp::export]]
 Rcpp::List read_las_cpp(std::vector<std::string>& lines, bool header_only = false, bool logs_only = true){
-  // Removes comments
+  
+  // Removes comments and blank lines
   lines.erase(std::remove_if(lines.begin(), lines.end(), [](std::string& x) { std::string fc = x.substr(0,1); return ((fc=="#")|(fc==""));}), lines.end());
+  
   std::string line;
   LasMap las_map;
   std::string sect_string = "";
@@ -71,7 +74,7 @@ Rcpp::List read_las_cpp(std::vector<std::string>& lines, bool header_only = fals
       sect_begin = n+1;
     }
   }
-  if((sect_string.size()>0) & (n>=sect_begin)){las_map.push_back(sect_string, sect_begin, n);}
+  if((sect_string.size()>0) & (n>=sect_begin)){las_map.push_back(sect_string, sect_begin, n-1);}
   if(las_map.size()==0){Rcpp::stop("No sections found, possibly not a LAS file?");}
   
   //Gets the indices of the various sections
@@ -98,7 +101,7 @@ Rcpp::List read_las_cpp(std::vector<std::string>& lines, bool header_only = fals
   }
   
   //Gets the well section and null value
- std::string null_str;
+  std::string null_str;
   if(well_index>=0){
     df_temp = parse_header(lines, las_map.start_index(well_index), 
                            las_map.end_index(well_index));
@@ -107,10 +110,9 @@ Rcpp::List read_las_cpp(std::vector<std::string>& lines, bool header_only = fals
   }
   if(null_str==""){null_str=="-999.25";}
   
-  //Gets the log data section
+  //Gets the log data sections
   std::vector<std::vector<int> > indices = las_map.section_indices("LOG");
-  if(indices.size()>0){las_list[2] = get_datasets(lines, indices, 
-     "log", las_map, delim, null_str, header_only);}
+  if(indices.size()>0){las_list[2] = get_datasets(lines, indices, "log", las_map, delim, null_str, header_only);}
   
   //Gets additional data sections if required
   if(!logs_only){
@@ -144,7 +146,7 @@ Rcpp::List read_las_cpp(std::vector<std::string>& lines, bool header_only = fals
     std::vector<std::string> user_sections = las_map.get_user_sections();
     if(user_sections.size()>0){
       Rcpp::List sectionList;
-      for(std::size_t i; i<user_sections.size(); i++){
+      for(std::size_t i=0; i<user_sections.size(); i++){
         indices = las_map.section_indices(user_sections[i]);
         if(indices.size()>0){
           sectionList.push_back(get_datasets(lines, indices,user_sections[i], las_map, delim, null_str, header_only));
