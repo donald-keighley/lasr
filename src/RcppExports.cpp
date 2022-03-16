@@ -90,15 +90,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // read_las_cpp
-Rcpp::List read_las_cpp(std::vector<std::string>& lines, bool header_only, bool logs_only);
-RcppExport SEXP _lasr_read_las_cpp(SEXP linesSEXP, SEXP header_onlySEXP, SEXP logs_onlySEXP) {
+Rcpp::List read_las_cpp(std::vector<std::string>& lines, bool header_only, bool extra);
+RcppExport SEXP _lasr_read_las_cpp(SEXP linesSEXP, SEXP header_onlySEXP, SEXP extraSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::vector<std::string>& >::type lines(linesSEXP);
     Rcpp::traits::input_parameter< bool >::type header_only(header_onlySEXP);
-    Rcpp::traits::input_parameter< bool >::type logs_only(logs_onlySEXP);
-    rcpp_result_gen = Rcpp::wrap(read_las_cpp(lines, header_only, logs_only));
+    Rcpp::traits::input_parameter< bool >::type extra(extraSEXP);
+    rcpp_result_gen = Rcpp::wrap(read_las_cpp(lines, header_only, extra));
     return rcpp_result_gen;
 END_RCPP
 }

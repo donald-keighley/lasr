@@ -4,14 +4,16 @@
 \alias{read.las.helper}
 \title{read.las.helper}
 \usage{
-read.las.helper(path, header_only = FALSE, logs_only = TRUE)
+read.las.helper(path, header_only = FALSE, extra = FALSE, flatten = FALSE)
 }
 \arguments{
 \item{path}{The path to the LAS file}
 
 \item{header_only}{TRUE or FALSE depending on whether you want to return only header data.}
 
-\item{logs_only}{TRUE if you want to only return up to the header section.}
+\item{extra}{Return the non-log data sections? FALSE by default.}
+
+\item{flatten}{Return just the first set of log data from a file.}
 }
 \value{
 A two part list containing the LAS file and the header

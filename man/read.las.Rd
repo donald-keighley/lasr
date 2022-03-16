@@ -4,7 +4,13 @@
 \alias{read.las}
 \title{read.las}
 \usage{
-read.las(paths, nthreads = 1, header_only = FALSE, logs_only = TRUE)
+read.las(
+  paths,
+  nthreads = 1,
+  header_only = FALSE,
+  extra = FALSE,
+  flatten = FALSE
+)
 }
 \arguments{
 \item{paths}{A vector of LAS file paths.}
@@ -15,7 +21,10 @@ threads and paths is greater than one it will run in parallel.  Default is one.}
 \item{header_only}{TRUE or FALSE depending on whether you want to return only header data. 
 If you only want headers, this will run faster.}
 
-\item{logs_only}{TRUE (default) if you only want to return up to the log section.}
+\item{extra}{Return the non-log data sections? FALSE by default.}
+
+\item{flatten}{Return just the first set of log data from a file.  Makes it
+easier to reference the log data since most files have only one set of log data.}
 }
 \value{
 A list containing a Version, Well, and Curveset sections.

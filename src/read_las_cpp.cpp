@@ -53,10 +53,10 @@ Rcpp::List get_datasets(const std::vector<std::string> &lines,
 //' @description A function to read LAS files.  Not really meant to be called by the user.
 //' @param lines A vector of lines with blank lines and leading whitespace removed
 //' @param header_only If true, will only return the header portions.
-//' @param logs_only If true, will only return up to the log section.
+//' @param extra If true, will return the extra data sections beyond just logs.
 //' @return A two part list
 // [[Rcpp::export]]
-Rcpp::List read_las_cpp(std::vector<std::string>& lines, bool header_only = false, bool logs_only = true){
+Rcpp::List read_las_cpp(std::vector<std::string>& lines, bool header_only = false, bool extra = false){
   
   // Removes comments and blank lines
   lines.erase(std::remove_if(lines.begin(), lines.end(), [](std::string& x) { std::string fc = x.substr(0,1); return ((fc=="#")|(fc==""));}), lines.end());
@@ -84,7 +84,7 @@ Rcpp::List read_las_cpp(std::vector<std::string>& lines, bool header_only = fals
   //Creates the outputs
   Rcpp::List las_list(3);
   las_list.attr("names") = Rcpp::CharacterVector({"version","well","log"});
-  if(!logs_only){
+  if(extra){
     Rcpp::List las_list_extra(9);
     las_list_extra.attr("names") = Rcpp::CharacterVector({"version","well","log","core","inclinometry","drilling","tops","test","user"});
     las_list = las_list_extra;
@@ -115,7 +115,7 @@ Rcpp::List read_las_cpp(std::vector<std::string>& lines, bool header_only = fals
   if(indices.size()>0){las_list[2] = get_datasets(lines, indices, "log", las_map, delim, null_str, header_only);}
   
   //Gets additional data sections if required
-  if(!logs_only){
+  if(extra){
     
     //Gets the core data section
     indices = las_map.section_indices("CORE");
