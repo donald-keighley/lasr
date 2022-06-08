@@ -61,7 +61,7 @@ read.las = function(paths, nthreads=1, header_only=FALSE, extra=FALSE, flatten=F
       cores = min(detectCores(logical=TRUE), nthreads)
       cl = makeCluster(cores)
       clusterEvalQ(cl, {library(lasr)})
-      clusterExport(cl, c("files", "read.las.helper"), envir=environment())
+      clusterExport(cl, c("read.las.helper"), envir=environment())
       las = parLapply(cl, paths, read.las.helper, header_only = header_only, extra = extra, flatten = flatten)
       stopCluster(cl)
     }else{
