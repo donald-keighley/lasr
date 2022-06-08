@@ -56,31 +56,12 @@ read.las.helper = function(path, header_only=FALSE, extra=FALSE, flatten=FALSE){
 #' @examples
 #' las = read.las(system.file("extdata", "Jonah_Federal_20-5.las", package = "lasr"))
 read.las = function(paths, nthreads=1, header_only=FALSE, extra=FALSE, flatten=FALSE){
-  
   if(length(paths)>1){
-    
-    # Clean the name of whatever object is passed to the paths argument for passing to the parallel::clusterExport() varlist argument
-    # Take the value passed to the paths argument and get its name as a string with substitute & deparse
-    paths_clean <-
-      deparse(substitute(paths))
-    
-    # Then remove any trailing "[]" (in case the user has passed a subset of a vector, e.g. my_files[1:500])
-    paths_clean <-
-      gsub(pattern = "\\[.*",
-           replacement = "",
-           x = paths_clean)
-    
-    # Then remove anything trailing a "$" (in case the user has passed a list element, e.g. my_list$my_files)
-    paths_clean <-
-      gsub(pattern = "\\$.*",
-           replacement = "",
-           x = paths_clean)
-    
     if(nthreads > 1){
       cores = min(detectCores(logical=TRUE), nthreads)
       cl = makeCluster(cores)
       clusterEvalQ(cl, {library(lasr)})
-      clusterExport(cl, c(paths_clean, "read.las.helper"), envir=environment())
+      clusterExport(cl, c("files", "read.las.helper"), envir=environment())
       las = parLapply(cl, paths, read.las.helper, header_only = header_only, extra = extra, flatten = flatten)
       stopCluster(cl)
     }else{
