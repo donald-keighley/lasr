@@ -1,7 +1,7 @@
 ---
 title: "lasr"
 author: "Donny Keighley"
-date: "1/1/2021"
+date: "6/8/2022"
 output: github_document
 ---
 
@@ -19,7 +19,7 @@ For a more traditional approach, or if you'd prefer to use Python, you should ch
 
 ## Installation
 
-You can install [**lasr**](https://github.com/donald-keighley/lasr) from github using the [`install_github`](https://www.rdocumentation.org/packages/devtools/versions/1.13.6/topics/install_github) function from the [devtools](https://devtools.r-lib.org/) package.
+You can install [**lasr**](https://github.com/donald-keighley/lasr) from github using the [`install_github`](https://www.rdocumentation.org/packages/devtools/versions/1.13.6/topics/install_github) function from the [devtools](https://devtools.r-lib.org/) package.  You will need to install [RTools](https://cran.r-project.org/bin/windows/Rtools/) first since the package needs compilation.
 
 ```{r install lasr, eval=FALSE}
 if (!require('devtools')) install.packages('devtools')
@@ -27,7 +27,7 @@ library(devtools)
 install_github('https://github.com/donald-keighley/lasr')
 ```
 
-Currently, the only function is `read.las` which will import a vector of LAS file paths into a multi-part list.  Each section of the file is now stored as a separate element.  In order to accomodate LAS 3.0 files which may have multiple log data sections, the log parameter, log definition, and log data are combined into one element called a "curveset".  If your vector of paths contains more than one file, the output will be a list of the aformentioned lists.
+Currently, the only function is `read.las` which will import a vector of LAS file paths into a multi-part list.  Each section of the file is stored as a separate element.  In order to accomodate LAS 3.0 files which may have multiple log data sections, the log parameter, log definition, and log data are combined into numbered log elements.  If your vector of paths contains more than one file, the output list will have an element for each file.
 
 Here is an example reading a single LAS file that is included with the package:
 
@@ -40,6 +40,13 @@ head(las$well, 10)
 
 #Display the log curves
 head(las$log$log.1$data, 10)
+```
+
+Most LAS files are version 2 and only have one log data section.  If you know this is the case you can set `flatten = TRUE` and only the first log section will be returned.  This makes referencing the log data quicker.
+
+```{r readlas, eval=TRUE, message=FALSE}
+las = read.las(system.file("extdata", "las_3_cwls.las", package = "lasr"), flatten=TRUE)
+head(las$log$data, 10)
 ```
 
 ## Speed Test

@@ -21,17 +21,65 @@ threads and paths is greater than one it will run in parallel.  Default is one.}
 \item{header_only}{TRUE or FALSE depending on whether you want to return only header data. 
 If you only want headers, this will run faster.}
 
-\item{extra}{Return the non-log data sections? FALSE by default.}
+\item{extra}{LAS 3 files can have additional non-log data sections.  To import those
+sections set this to TRUE.  By default it is FALSE because LAS 3 files with extra
+data are rare in the wild.  Note that the extra data may have non-standard names so
+referencing them may take some experimentation.}
 
-\item{flatten}{Return just the first set of log data from a file.  Makes it
-easier to reference the log data since most files have only one set of log data.}
+\item{flatten}{If TRUE Return just the first set of log data from a file.
+This makes it easier to reference the log data since most files have only 
+one set of log data.}
 }
 \value{
-A list containing a Version, Well, and Curveset sections.
+A list containing a version, well, log, and path sections as well as 
+any additional sections if extra is set to TRUE.
 }
 \description{
 This function imports a LAS file to R.
 }
 \examples{
-las = read.las(system.file("extdata", "Jonah_Federal_20-5.las", package = "lasr"))
+# load a single las file
+f = system.file("extdata", "Jonah_Federal_20-5.las", package = "lasr")
+las = read.las(f)
+
+# get the version section
+las$version
+
+# get the well section
+las$well
+
+#' # get the original file path
+las$path
+
+# get the log data, definition, and parameters
+las$log$log.1$data
+las$log$log.1$definition
+las$log$log.1$parameter
+
+# use the flatten parameter to get just the first log data set
+las = read.las(f, flatten = TRUE)
+
+# referencing the log data is now shorter
+las$log$data
+
+# read multiple files.  consider setting nthreads > 1 if you have many files.
+files = c(system.file("extdata", "Jonah_Federal_20-5.las", package='lasr'),
+system.file("extdata", "las_3_cwls.las", package='lasr'))
+las = read.las(files)
+
+# in this case the imported las files are bound together in a list
+# to reference the data you must first specify the element
+# for instance, to get the log data from the second log
+las[[2]]$log$log.1$data
+
+# get extra data sections from a LAS 3 file
+f = system.file("extdata", "las_3_cwls.las", package='lasr')
+las = read.las(f, extra = TRUE)
+
+# gets the core data as an example
+las$core$core.1$data
+
+# get just the header and not the actual data
+# this is faster if you only need header data for many files
+header = read.las(f, header_only=TRUE)
 }

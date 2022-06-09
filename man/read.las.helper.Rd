@@ -19,6 +19,6 @@ read.las.helper(path, header_only = FALSE, extra = FALSE, flatten = FALSE)
 A two part list containing the LAS file and the header
 }
 \description{
-Imports an LAS file to R
+Imports a LAS file to R as a list.
 }
 \keyword{internal}
