@@ -56,6 +56,9 @@ read.las.helper = function(path, header_only=FALSE, extra=FALSE, flatten=FALSE){
 #' @param flatten If TRUE Return just the first set of log data from a file.  
 #' This makes it easier to reference the log data since most files have only 
 #' one set of log data.
+#' @param pad_list If TRUE adds a level to the resulting list when the number of 
+#' files is one.  This makes automation easier since referencing the data will
+#' always be consistent.  FALSE by default to make working with single files easier.
 #' @return A list containing a version, well, log, and path sections as well as 
 #' any additional sections if extra is set to TRUE.
 #' @examples
@@ -103,7 +106,13 @@ read.las.helper = function(path, header_only=FALSE, extra=FALSE, flatten=FALSE){
 #' # get just the header and not the actual data
 #' # this is faster if you only need header data for many files
 #' header = read.las(f, header_only=TRUE)
-read.las = function(paths, nthreads=1, header_only=FALSE, extra=FALSE, flatten=FALSE){
+#' 
+#' # using pad_list = TRUE so that accessing data from one file is the same
+#' # as accessing it from many files (i.e. [[1]] is required)
+#' las = read.las(f, pad_list = TRUE)
+#' las[[1]]$log$log.1$data
+read.las = function(paths, nthreads=1, header_only=FALSE, extra=FALSE, flatten=FALSE,
+                    pad_list=FALSE){
   if(length(paths)>1){
     if(nthreads > 1){
       cores = min(detectCores(logical=TRUE), nthreads)
@@ -117,6 +126,7 @@ read.las = function(paths, nthreads=1, header_only=FALSE, extra=FALSE, flatten=F
     }
   }else{
     las = read.las.helper(paths[1], header_only = header_only, extra = extra, flatten = flatten)
+    if(pad_list){las = list(las)}
   }
   return(las)
 }
