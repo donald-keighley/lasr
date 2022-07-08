@@ -15,7 +15,7 @@ Currently, the focus is on supporting reading [LAS 3.0](https://www.cwls.org/wp-
 
 [**lasr**](https://github.com/donald-keighley/lasr) is not designed to accomplish traditional petrophysical workflows and there are no plans to do so. There's plenty of industry software for that.  lasr is intended as a building block to facilitate people doing new and creative things with large volumes of log data.  It's also intended to help build up the library of geoscience packages for R. 
 
-For a more traditional approach, or if you'd prefer to use Python, you should check out the excellent packages [**lasio**](https://lasio.readthedocs.io/en/latest/index.html) and [**welly**](https://welly.readthedocs.io/en/latest/api/welly.html).
+For a more traditional approach, or if you'd prefer to use Python, you should check out the excellent [**lasio**](https://lasio.readthedocs.io/en/latest/index.html) package.
 
 ## Installation
 
@@ -68,7 +68,7 @@ Now in Python in parallel using 4 cores:
 
 ```{r setup, include=FALSE}
 library(reticulate)
-use_python("C:/Users/donal/anaconda3")
+use_python("C:/Users/donal/AppData/Local/Programs/Python/Python310")
 ```
 
 ```{python import_kgs_logs_lasio, eval=FALSE}
@@ -84,7 +84,7 @@ end_time = datetime.datetime.now()
 print('Duration: {}'.format(end_time - start_time))
 ```
 ```{python print_time_python, echo=FALSE}
-print('Duration: 0:04:32.132885')
+print('Duration: 0:04:45.961226')
 ```
 
 Clearly, lasr is faster, however, please don't take this as a shot at lasio.  The primary goal of this package is speed, and as such countless hours have been put into speed testing, de-bottlenecking, and enduring the pain of writing in C++.  As with anything, there are tradeoffs, and lasr errs toward speed where lasio tends more toward user convenience.  They are simply different products.

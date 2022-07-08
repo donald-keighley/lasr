@@ -1,7 +1,7 @@
 lasr
 ================
 Donny Keighley
-1/1/2021
+6/8/2022
 
 [lasr](https://github.com/donald-keighley/lasr) is a package designed
 for reading and writing [Log Ascii Standard
@@ -9,8 +9,7 @@ for reading and writing [Log Ascii Standard
 the beta testing stages. As such, it is subject to significant ongoing
 changes and is not complete. For instance it can’t write LAS files yet…
 
-Goals
------
+## Goals
 
 lasr is primarily designed to import LAS files at high speed and in
 large batches. To accomplish this, most of it is written in C++ and
@@ -36,17 +35,18 @@ large volumes of log data. It’s also intended to help build up the
 library of geoscience packages for R.
 
 For a more traditional approach, or if you’d prefer to use Python, you
-should check out the excellent packages
-[**lasio**](https://lasio.readthedocs.io/en/latest/index.html) and
-[**welly**](https://welly.readthedocs.io/en/latest/api/welly.html).
+should check out the excellent
+[**lasio**](https://lasio.readthedocs.io/en/latest/index.html) package.
 
-Installation
-------------
+## Installation
 
 You can install [**lasr**](https://github.com/donald-keighley/lasr) from
 github using the
 [`install_github`](https://www.rdocumentation.org/packages/devtools/versions/1.13.6/topics/install_github)
-function from the [devtools](https://devtools.r-lib.org/) package.
+function from the [devtools](https://devtools.r-lib.org/) package. You
+will need to install
+[RTools](https://cran.r-project.org/bin/windows/Rtools/) first since the
+package needs compilation.
 
 ``` r
 if (!require('devtools')) install.packages('devtools')
@@ -55,12 +55,12 @@ install_github('https://github.com/donald-keighley/lasr')
 ```
 
 Currently, the only function is `read.las` which will import a vector of
-LAS file paths into a multi-part list. Each section of the file is now
+LAS file paths into a multi-part list. Each section of the file is
 stored as a separate element. In order to accomodate LAS 3.0 files which
 may have multiple log data sections, the log parameter, log definition,
-and log data are combined into one element called a “curveset”. If your
-vector of paths contains more than one file, the output will be a list
-of the aformentioned lists.
+and log data are combined into numbered log elements. If your vector of
+paths contains more than one file, the output list will have an element
+for each file.
 
 Here is an example reading a single LAS file that is included with the
 package:
@@ -118,8 +118,34 @@ head(las$log$log.1$data, 10)
     ## 6:     10      8     17
     ## 7:     10      8     17
 
-Speed Test
-----------
+Most LAS files are version 2 and only have one log data section. If you
+know this is the case you can set `flatten = TRUE` and only the first
+log section will be returned. This makes referencing the log data
+quicker.
+
+``` r
+las = read.las(system.file("extdata", "las_3_cwls.las", package = "lasr"), flatten=TRUE)
+head(las$log$data, 10)
+```
+
+    ##        DEPT     DT DPHI NPHI      YME                     CDES NMR[1] NMR[2]
+    ## 1: 1660.125 123.45 0.11 0.37 1.45E+12          DOLOMITE W/VUGS     10     12
+    ## 2: 1660.250 123.45 0.12 0.36 1.47E+12                LIMESTONE     12     15
+    ## 3: 1660.375 123.45 0.13 0.35 2.85E+12            LOST INTERVAL     18     25
+    ## 4: 1660.500 123.45 0.14 0.34 2.85E+12            LOST INTERVAL     18     25
+    ## 5: 1660.625 123.45 0.15 0.33 2.85E+12            LOST INTERVAL     18     25
+    ## 6: 1660.750 123.45 0.16 0.32 2.85E+12 SANDSTONE, SHALE STREAKS     18     25
+    ## 7: 1660.875 123.45 0.17 0.31 2.85E+12            LOST INTERVAL     18     25
+    ##    NMR[3] NMR[4] NMR[5]
+    ## 1:     14     18     13
+    ## 2:     21     35     25
+    ## 3:     10      8     17
+    ## 4:     10      8     17
+    ## 5:     10      8     17
+    ## 6:     10      8     17
+    ## 7:     10      8     17
+
+## Speed Test
 
 Since the purpose of this package is to load LAS files as quickly as
 possible, a speed test is included here with a comparison to python’s
@@ -144,7 +170,7 @@ time.taken = end.time - start.time
 time.taken
 ```
 
-    ## Time difference of 29.35815 secs
+    ## Time difference of 25.96407 secs
 
 Now in Python in parallel using 4 cores:
 
@@ -161,7 +187,7 @@ end_time = datetime.datetime.now()
 print('Duration: {}'.format(end_time - start_time))
 ```
 
-    ## Duration: 0:04:32.132885
+    ## Duration: 0:04:45.961226
 
 Clearly, lasr is faster, however, please don’t take this as a shot at
 lasio. The primary goal of this package is speed, and as such countless
