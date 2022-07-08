@@ -44,7 +44,7 @@ head(las$log$log.1$data, 10)
 
 Most LAS files are version 2 and only have one log data section.  If you know this is the case you can set `flatten = TRUE` and only the first log section will be returned.  This makes referencing the log data quicker.
 
-```{r readlas, eval=TRUE, message=FALSE}
+```{r readlas_flatten, eval=TRUE, message=FALSE}
 las = read.las(system.file("extdata", "las_3_cwls.las", package = "lasr"), flatten=TRUE)
 head(las$log$data, 10)
 ```

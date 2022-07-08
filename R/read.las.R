@@ -8,7 +8,7 @@
 
 list.to.dt = function(l){
   if(inherits(l, 'data.frame')){
-    setDT(l)
+    eval(substitute(setDT(l)),parent.frame())
   }else if(inherits(l,'list')){
     lapply(l, list.to.dt)
   }
