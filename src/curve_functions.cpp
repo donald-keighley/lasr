@@ -123,6 +123,6 @@ Rcpp::List parse_curves(std::vector<std::string> const &lines,
     }
   }
   converted_curves.attr("names") = curve_names;
-  converted_curves.attr("class") = Rcpp::CharacterVector::create("data.table", "data.frame");
+  converted_curves.attr("class") = Rcpp::CharacterVector::create("data.frame");
   return(converted_curves);
 }

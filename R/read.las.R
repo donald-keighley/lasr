@@ -1,3 +1,21 @@
+#' @name list.to.dt
+#' @title list.to.dt
+#' @description Converts all data.frames in a list to data.tables in place
+#' @import data.table
+#' @keywords internal
+#' @param l A list
+#' @return Nothing, data.frames are converted in place
+
+list.to.dt = function(l){
+  if(inherits(l, 'data.frame')){
+    setDT(l)
+  }else if(inherits(l,'list')){
+    lapply(l, list.to.dt)
+  }
+  return(NULL)
+}
+
+
 #' @name read.las.helper
 #' @title read.las.helper
 #' @description Imports a LAS file to R as a list.
@@ -25,6 +43,7 @@ read.las.helper = function(path, header_only=FALSE, extra=FALSE, flatten=FALSE){
                     strip.white=TRUE, blank.lines.skip = TRUE, 
                     showProgress = FALSE, colClasses = "character")$line
       las = read_las_cpp(lines, header_only, extra)
+      invisible(list.to.dt(las))
       if(flatten){las$log = las$log$log.1}
       bad_las = FALSE
     }, error = function(e){
