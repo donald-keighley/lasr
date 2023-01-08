@@ -33,22 +33,22 @@ Rcpp::DataFrame parse_header(std::vector<std::string> const &lines, int first_li
     for(int j=first_line; j<=last_line; j++){
       std::string line = lines[j];
       //These are the delimiter positions for the mnemonic, unit, value, comment, and format
-      int d1=0; int d2=0; int d3=0; int d4=0; int d5=0; int d6=0;
+      int d1=-1; int d2=0; int d3=0; int d4=0; int d5=0; int d6=0;
       int numchar = line.size(); //Gets the number of characters in the line
       
       //Checks if the line has data
       bool inside_brackets=false;
       for(int i = 0; i < numchar; i++){
-        if((line[i]=='.') & (d1==0)){d1=i;}                      //Gets mnemonic delimiter
-        if((line[i]==' ') & (d1!=0) & (d2==0)){d2=i;}            //Gets units delimiter
-        if((line[i]==':') & (inside_brackets==false)){d3=i;}     //Gets value delimiter
+        if((line[i]=='.') & (d1==-1)){d1=i;}                      //Gets mnemonic delimiter
+        if(((line[i]==' ')|(line[i]=='\t')) & (d1!=-1) & (d2==0)){d2=i;}            //Gets units delimiter
+        if((line[i]==':') & (inside_brackets==false)){d3=i; d4=0; d5=0; d6=0;}     //Gets value delimiter
         if(line[i]=='{'){d4=i; inside_brackets=true;}            //Gets comment delimiter
         if(line[i]=='}'){d5=i; inside_brackets=false;}           //Gets format delimiter (may not exist)
         if((line[i]=='|') & (d3!=0) & (inside_brackets==false)){d6=i;} //Gets the association delimiter
       }
       
       //Checks if enough delimiters were found to parse a line.
-      if((d1!=0) & (d2!=0) & (d3!=0) & (d1<d2) & (d2<d3) & (d3<numchar)){
+      if((d1!=-1) & (d2!=0) & (d3!=0) & (d1<d2) & (d2<d3) & (d3<numchar)){
         header[0][n] = trim_ws(line.substr(0,d1));               //Mnemonic
         header[1][n] = trim_ws(line.substr(d1+1,(d2-1)-d1));     //Units
         header[2][n] = trim_ws(line.substr(d2+1,(d3-1)-d2));     //Value

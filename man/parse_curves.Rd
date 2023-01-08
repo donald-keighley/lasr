@@ -8,7 +8,7 @@ parse_curves(
   lines,
   curve_names,
   format,
-  delim = " ",
+  delim = " \\t",
   null_str = "-999.25",
   first_line = 0L,
   last_line = -1L

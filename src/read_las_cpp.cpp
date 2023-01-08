@@ -32,7 +32,7 @@ Rcpp::List get_datasets(const std::vector<std::string> &lines,
         df_temp = parse_header(lines, las_map.start_index(def_index), las_map.end_index(def_index));
         dataset[1] = df_temp;
         int data_index = indices[i][2];
-        if((!header_only) & (data_index>0)){
+        if((!header_only) & (data_index>0) & (df_temp.nrows()>0)){
           dataset[2] = parse_curves(lines, df_temp["mnemonic"],  df_temp["format"],
                                     delim, null_str, las_map.start_index(data_index),
                                     las_map.end_index(data_index));
@@ -54,28 +54,38 @@ Rcpp::List get_datasets(const std::vector<std::string> &lines,
 //' @param lines A vector of lines with blank lines and leading whitespace removed
 //' @param header_only If true, will only return the header portions.
 //' @param extra If true, will return the extra data sections beyond just logs.
+//' @param comments If true, will return all the comments appended to the list.
 //' @return A two part list
 // [[Rcpp::export]]
-Rcpp::List read_las_cpp(std::vector<std::string>& lines, bool header_only = false, bool extra = false){
-  
-  // Removes comments and blank lines
-  lines.erase(std::remove_if(lines.begin(), lines.end(), [](std::string& x) { std::string fc = x.substr(0,1); return ((fc=="#")|(fc==""));}), lines.end());
+Rcpp::List read_las_cpp(std::vector<std::string>& lines, bool header_only = false, bool extra = false, bool comments = false){
   
   std::string line;
   LasMap las_map;
   std::string sect_string = "";
+  std::vector<std::string> comments_vector;
   int sect_begin = -1;
   int n = 0;
+  int good_line_index = 0;
   for(n=0; n<(int)lines.size(); n++) {
     line = lines[n];
     if(line[0]=='~'){
-      if((sect_string.size()>0) & ((n-1)>=sect_begin)){las_map.push_back(sect_string, sect_begin, n-1);}
+      if((sect_string.size()>0) & ((good_line_index-1)>=sect_begin)){las_map.push_back(sect_string, sect_begin, good_line_index-1);}
       sect_string = line;
-      sect_begin = n+1;
+      sect_begin = good_line_index+1;
+      good_line_index++;
+    }else if(line[0]=='#'){
+      if(comments){
+        comments_vector.push_back(line);
+      }
+    }else if(!line.empty()){
+      good_line_index++;
     }
   }
-  if((sect_string.size()>0) & (n>=sect_begin)){las_map.push_back(sect_string, sect_begin, n-1);}
+  if((sect_string.size()>0) & (good_line_index>=sect_begin)){las_map.push_back(sect_string, sect_begin, good_line_index-1);}
   if(las_map.size()==0){Rcpp::stop("No sections found, possibly not a LAS file?");}
+  
+  // Removes comments and blank lines
+  lines.erase(std::remove_if(lines.begin(), lines.end(), [](std::string& x) { std::string fc = x.substr(0,1); return ((fc=="#")|(fc==""));}), lines.end());
   
   //Gets the indices of the various sections
   int version_index = las_map.section_indices("VERSION")[0][0];
@@ -89,6 +99,7 @@ Rcpp::List read_las_cpp(std::vector<std::string>& lines, bool header_only = fals
     las_list_extra.attr("names") = Rcpp::CharacterVector({"version","well","log","core","inclinometry","drilling","tops","test","user"});
     las_list = las_list_extra;
   }
+  if(comments){las_list.push_back(comments_vector, "comments");}
   Rcpp::DataFrame df_temp;
 
   //Gets the version section

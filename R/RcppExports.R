@@ -12,7 +12,7 @@
 #' @param first_line An integer indicating the index of the first line in lines containing log data
 #' @param last_line An integer indicating the last index of lines containing log data.
 #' @return A dataframe containing the curves
-parse_curves <- function(lines, curve_names, format, delim = " ", null_str = "-999.25", first_line = 0L, last_line = -1L) {
+parse_curves <- function(lines, curve_names, format, delim = " \t", null_str = "-999.25", first_line = 0L, last_line = -1L) {
     .Call('_lasr_parse_curves', PACKAGE = 'lasr', lines, curve_names, format, delim, null_str, first_line, last_line)
 }
 
@@ -79,8 +79,9 @@ get_header_string <- function(header, mnem) {
 #' @param lines A vector of lines with blank lines and leading whitespace removed
 #' @param header_only If true, will only return the header portions.
 #' @param extra If true, will return the extra data sections beyond just logs.
+#' @param comments If true, will return all the comments appended to the list.
 #' @return A two part list
-read_las_cpp <- function(lines, header_only = FALSE, extra = FALSE) {
-    .Call('_lasr_read_las_cpp', PACKAGE = 'lasr', lines, header_only, extra)
+read_las_cpp <- function(lines, header_only = FALSE, extra = FALSE, comments = FALSE) {
+    .Call('_lasr_read_las_cpp', PACKAGE = 'lasr', lines, header_only, extra, comments)
 }
 

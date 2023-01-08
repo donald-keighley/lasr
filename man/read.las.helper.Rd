@@ -4,7 +4,13 @@
 \alias{read.las.helper}
 \title{read.las.helper}
 \usage{
-read.las.helper(path, header_only = FALSE, extra = FALSE, flatten = FALSE)
+read.las.helper(
+  path,
+  header_only = FALSE,
+  extra = FALSE,
+  flatten = FALSE,
+  comments = FALSE
+)
 }
 \arguments{
 \item{path}{The path to the LAS file}
@@ -14,9 +20,11 @@ read.las.helper(path, header_only = FALSE, extra = FALSE, flatten = FALSE)
 \item{extra}{Return the non-log data sections? FALSE by default.}
 
 \item{flatten}{Return just the first set of log data from a file.}
+
+\item{comments}{If TRUE comments will be appended to the list.}
 }
 \value{
-A two part list containing the LAS file and the header
+A two part list containing the LAS file and the header.
 }
 \description{
 Imports a LAS file to R as a list.

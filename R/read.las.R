@@ -25,8 +25,9 @@ list.to.dt = function(l){
 #' @param header_only TRUE or FALSE depending on whether you want to return only header data.
 #' @param extra Return the non-log data sections? FALSE by default.
 #' @param flatten Return just the first set of log data from a file.
-#' @return A two part list containing the LAS file and the header
-read.las.helper = function(path, header_only=FALSE, extra=FALSE, flatten=FALSE){
+#' @param comments If TRUE comments will be appended to the list.
+#' @return A two part list containing the LAS file and the header.
+read.las.helper = function(path, header_only=FALSE, extra=FALSE, flatten=FALSE, comments = FALSE){
   
   #Assumes the file is bad unless it proves not to be
   bad_las=TRUE
@@ -42,7 +43,7 @@ read.las.helper = function(path, header_only=FALSE, extra=FALSE, flatten=FALSE){
       lines = fread(path, sep=NULL, header=FALSE, col.names = "line", 
                     strip.white=TRUE, blank.lines.skip = TRUE, 
                     showProgress = FALSE, colClasses = "character")$line
-      las = read_las_cpp(lines, header_only, extra)
+      las = read_las_cpp(lines, header_only, extra, comments)
       invisible(list.to.dt(las))
       if(flatten){las$log = las$log$log.1}
       bad_las = FALSE
@@ -78,6 +79,7 @@ read.las.helper = function(path, header_only=FALSE, extra=FALSE, flatten=FALSE){
 #' @param pad_list If TRUE adds a level to the resulting list when the number of 
 #' files is one.  This makes automation easier since referencing the data will
 #' always be consistent.  FALSE by default to make working with single files easier.
+#' @param comments If TRUE comments will be appended to the list.
 #' @return A list containing a version, well, log, and path sections as well as 
 #' any additional sections if extra is set to TRUE.
 #' @examples
@@ -131,20 +133,20 @@ read.las.helper = function(path, header_only=FALSE, extra=FALSE, flatten=FALSE){
 #' las = read.las(f, pad_list = TRUE)
 #' las[[1]]$log$log.1$data
 read.las = function(paths, nthreads=1, header_only=FALSE, extra=FALSE, flatten=FALSE,
-                    pad_list=FALSE){
+                    pad_list=FALSE, comments = FALSE){
   if(length(paths)>1){
     if(nthreads > 1){
       cores = min(detectCores(logical=TRUE), nthreads)
       cl = makeCluster(cores)
       clusterEvalQ(cl, {library(lasr)})
       clusterExport(cl, c("read.las.helper"), envir=environment())
-      las = parLapply(cl, paths, read.las.helper, header_only = header_only, extra = extra, flatten = flatten)
+      las = parLapply(cl, paths, read.las.helper, header_only = header_only, extra = extra, flatten = flatten, comments = comments)
       stopCluster(cl)
     }else{
-      las = lapply(paths, read.las.helper, header_only = header_only, extra = extra, flatten = flatten)
+      las = lapply(paths, read.las.helper, header_only = header_only, extra = extra, flatten = flatten, comments = comments)
     }
   }else{
-    las = read.las.helper(paths[1], header_only = header_only, extra = extra, flatten = flatten)
+    las = read.las.helper(paths[1], header_only = header_only, extra = extra, flatten = flatten, comments = comments)
     if(pad_list){las = list(las)}
   }
   return(las)

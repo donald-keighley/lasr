@@ -90,15 +90,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // read_las_cpp
-Rcpp::List read_las_cpp(std::vector<std::string>& lines, bool header_only, bool extra);
-RcppExport SEXP _lasr_read_las_cpp(SEXP linesSEXP, SEXP header_onlySEXP, SEXP extraSEXP) {
+Rcpp::List read_las_cpp(std::vector<std::string>& lines, bool header_only, bool extra, bool comments);
+RcppExport SEXP _lasr_read_las_cpp(SEXP linesSEXP, SEXP header_onlySEXP, SEXP extraSEXP, SEXP commentsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::vector<std::string>& >::type lines(linesSEXP);
     Rcpp::traits::input_parameter< bool >::type header_only(header_onlySEXP);
     Rcpp::traits::input_parameter< bool >::type extra(extraSEXP);
-    rcpp_result_gen = Rcpp::wrap(read_las_cpp(lines, header_only, extra));
+    Rcpp::traits::input_parameter< bool >::type comments(commentsSEXP);
+    rcpp_result_gen = Rcpp::wrap(read_las_cpp(lines, header_only, extra, comments));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -110,7 +111,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_lasr_get_header_double", (DL_FUNC) &_lasr_get_header_double, 3},
     {"_lasr_get_header_int", (DL_FUNC) &_lasr_get_header_int, 3},
     {"_lasr_get_header_string", (DL_FUNC) &_lasr_get_header_string, 2},
-    {"_lasr_read_las_cpp", (DL_FUNC) &_lasr_read_las_cpp, 3},
+    {"_lasr_read_las_cpp", (DL_FUNC) &_lasr_read_las_cpp, 4},
     {NULL, NULL, 0}
 };
 

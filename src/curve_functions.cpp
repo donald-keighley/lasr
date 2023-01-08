@@ -15,7 +15,7 @@
 Rcpp::List parse_curves(std::vector<std::string> const &lines,
                              Rcpp::CharacterVector const &curve_names,
                              Rcpp::CharacterVector const &format,
-                             std::string delim = " ",
+                             std::string delim = " \t",
                              std::string null_str = "-999.25",
                              int first_line = 0, 
                              int last_line = -1){
@@ -26,7 +26,7 @@ Rcpp::List parse_curves(std::vector<std::string> const &lines,
   double null_val = std::atof(null_str.c_str());
   
   //Handles some special cases of the delimiters
-  if(delim == "COMMA"){delim = ",";}else if(delim == "TAB"){delim = "\t";}else{delim = " ";}
+  if(delim == "COMMA"){delim = ",";}else if(delim == "TAB"){delim = "\t";}else{delim = " \t";}
   
   //Vector of string vectors to hold results.  Will convert types later.
   int ncol = curve_names.size();
@@ -38,7 +38,7 @@ Rcpp::List parse_curves(std::vector<std::string> const &lines,
   int col_index=0;
   std::size_t start; std::size_t end; std::string line;
   //If the delimiter is a space, consecutive delimiters are treated as one:
-  if(delim == " "){
+  if(delim == " \t"){
     for(int line_index = first_line; line_index<=last_line; line_index++){
       start=0; end=0; line=lines[line_index];
       while(end<std::string::npos){

@@ -4,7 +4,7 @@
 \alias{read_las_cpp}
 \title{read_las_cpp}
 \usage{
-read_las_cpp(lines, header_only = FALSE, extra = FALSE)
+read_las_cpp(lines, header_only = FALSE, extra = FALSE, comments = FALSE)
 }
 \arguments{
 \item{lines}{A vector of lines with blank lines and leading whitespace removed}
@@ -12,6 +12,8 @@ read_las_cpp(lines, header_only = FALSE, extra = FALSE)
 \item{header_only}{If true, will only return the header portions.}
 
 \item{extra}{If true, will return the extra data sections beyond just logs.}
+
+\item{comments}{If true, will return all the comments appended to the list.}
 }
 \value{
 A two part list

@@ -10,7 +10,8 @@ read.las(
   header_only = FALSE,
   extra = FALSE,
   flatten = FALSE,
-  pad_list = FALSE
+  pad_list = FALSE,
+  comments = FALSE
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ one set of log data.}
 \item{pad_list}{If TRUE adds a level to the resulting list when the number of 
 files is one.  This makes automation easier since referencing the data will
 always be consistent.  FALSE by default to make working with single files easier.}
+
+\item{comments}{If TRUE comments will be appended to the list.}
 }
 \value{
 A list containing a version, well, log, and path sections as well as 
